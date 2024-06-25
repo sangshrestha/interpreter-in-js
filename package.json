@@ -1,0 +1,15 @@
+{
+  "name": "js-interpreter",
+  "version": "1.0.0",
+  "description": "Monkey interpreter using JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sangshrestha/js-interpreter.git"
+  },
+  "author": "Sang Shrestha",
+  "license": "ISC"
+}
