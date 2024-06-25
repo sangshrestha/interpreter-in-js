@@ -3,13 +3,23 @@
   "version": "1.0.0",
   "description": "Monkey interpreter using JS",
   "main": "index.js",
+  "type": "module",
+  "imports": {
+    "#root/*": "./*"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sangshrestha/js-interpreter.git"
   },
   "author": "Sang Shrestha",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "transform": {}
+  }
 }
