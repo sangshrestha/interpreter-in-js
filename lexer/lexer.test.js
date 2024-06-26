@@ -83,4 +83,42 @@ describe("Lexer.nextToken()", () => {
       expect(testLexer.nextToken()).toEqual(expectedToken);
     });
   });
+
+  it("assigns token for single digits", () => {
+    const testString = "0 1 2 3 4 5 6 7 8 9";
+    const testLexer = new Lexer(testString);
+
+    const expectedTokens = [
+      { type: token.INT, literal: "0" },
+      { type: token.INT, literal: "1" },
+      { type: token.INT, literal: "2" },
+      { type: token.INT, literal: "3" },
+      { type: token.INT, literal: "4" },
+      { type: token.INT, literal: "5" },
+      { type: token.INT, literal: "6" },
+      { type: token.INT, literal: "7" },
+      { type: token.INT, literal: "8" },
+      { type: token.INT, literal: "9" },
+      { type: token.EOF, literal: "" },
+    ];
+
+    expectedTokens.forEach((expectedToken) => {
+      expect(testLexer.nextToken()).toEqual(expectedToken);
+    });
+  });
+
+  it("assigns token for long digits", () => {
+    const testString = "01 2345678 90000000000000";
+    const testLexer = new Lexer(testString);
+
+    const expectedTokens = [
+      { type: token.INT, literal: "01" },
+      { type: token.INT, literal: "2345678" },
+      { type: token.INT, literal: "90000000000000" },
+    ];
+
+    expectedTokens.forEach((expectedToken) => {
+      expect(testLexer.nextToken()).toEqual(expectedToken);
+    });
+  });
 });

@@ -1,5 +1,5 @@
 import * as token from "#root/token/token.js";
-import { isLetter } from "#root/utility.js";
+import { isDigitString, isLetter } from "#root/utility.js";
 export class Lexer {
   #input;
 
@@ -36,6 +36,16 @@ export class Lexer {
     const startIndex = this.index;
 
     while (isLetter(this.char)) {
+      this.#updateIndex();
+    }
+
+    return this.#input.slice(startIndex, this.index);
+  }
+
+  #readDigit() {
+    const startIndex = this.index;
+
+    while (isDigitString(this.char)) {
       this.#updateIndex();
     }
 
@@ -105,14 +115,18 @@ export class Lexer {
         break;
 
       case 0:
-        tok.type = token.EOF;
         tok.literal = "";
+        tok.type = token.EOF;
         break;
 
       default:
         if (isLetter(this.char)) {
           tok.literal = this.#readIdentifier();
           tok.type = token.lookupIdent(tok.literal);
+          return tok;
+        } else if (isDigitString(this.char)) {
+          tok.literal = this.#readDigit();
+          tok.type = token.INT;
           return tok;
         }
     }
@@ -121,7 +135,3 @@ export class Lexer {
     return tok;
   }
 }
-
-const test = new Lexer("fn");
-
-console.log(test.nextToken());
