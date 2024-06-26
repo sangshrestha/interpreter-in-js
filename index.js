@@ -1,8 +1,20 @@
-import * as token from "#root/token/token.js";
+import readline from "node:readline/promises";
 
-export function hello() {
-  return [
-    { a: 1, b: 2 },
-    { c: 3, d: 5 },
-  ];
+import { Lexer } from "./lexer/lexer.js";
+
+while (true) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  const code = await rl.question(">> ");
+
+  const inputLexer = new Lexer(code);
+
+  while (inputLexer.char !== 0) {
+    console.log(inputLexer.nextToken());
+  }
+
+  rl.close();
 }
