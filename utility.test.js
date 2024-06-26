@@ -1,10 +1,6 @@
-import { isLetter } from "./utility";
+import { isLetter, isDigitString } from "./utility";
 
 describe("isLetter()", () => {
-  it("returns false for undefined", () => {
-    expect(isLetter()).toEqual(false);
-  });
-
   it("returns true for allowed chars", () => {
     const allowedChars = [
       "A",
@@ -84,5 +80,42 @@ describe("isLetter()", () => {
 
   it("throws error if char is too long", () => {
     expect(() => isLetter("abc")).toThrow(RangeError);
+  });
+
+  it("throws error if char is undefined", () => {
+    expect(() => isLetter()).toThrow(TypeError);
+  });
+});
+
+describe("isDigitString()", () => {
+  it("returns true for string digits", () => {
+    const allowedDigits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    allowedDigits.forEach((digit) => {
+      expect(isDigitString(digit)).toEqual(true);
+    });
+  });
+
+  it("returns false for 0", () => {
+    expect(isDigitString(0)).toEqual(false);
+  });
+
+  it("returns false for 9", () => {
+    expect(isDigitString(9)).toEqual(false);
+  });
+
+  it("returns false for 'a'", () => {
+    expect(isDigitString("a")).toEqual(false);
+  });
+
+  it("returns false for ' '", () => {
+    expect(isDigitString(" ")).toEqual(false);
+  });
+
+  it("throws error if too many digits", () => {
+    expect(() => isDigitString("12")).toThrow(RangeError);
+  });
+
+  it("throws error if digit is undefined", () => {
+    expect(() => isDigitString()).toThrow(TypeError);
   });
 });
