@@ -64,15 +64,20 @@ describe("Lexer.nextToken()", () => {
     });
   });
 
-  it("assigns token for keywords", () => {
-    const testString = "fn let true false if else return";
+  it("assigns token for keywords and identifiers", () => {
+    const testString =
+      "fn sang let true Hello WORLD false twenty_three if else return";
     const testLexer = new Lexer(testString);
 
     const expectedTokens = [
       { type: token.FUNCTION, literal: "fn" },
+      { type: token.IDENT, literal: "sang" },
       { type: token.LET, literal: "let" },
       { type: token.TRUE, literal: "true" },
+      { type: token.IDENT, literal: "Hello" },
+      { type: token.IDENT, literal: "WORLD" },
       { type: token.FALSE, literal: "false" },
+      { type: token.IDENT, literal: "twenty_three" },
       { type: token.IF, literal: "if" },
       { type: token.ELSE, literal: "else" },
       { type: token.RETURN, literal: "return" },
