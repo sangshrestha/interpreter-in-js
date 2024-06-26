@@ -78,12 +78,12 @@ describe("isLetter()", () => {
     expect(isLetter(" ")).toEqual(false);
   });
 
-  it("throws error if char is too long", () => {
-    expect(() => isLetter("abc")).toThrow(RangeError);
+  it("returns false if char is undefined", () => {
+    expect(isLetter()).toEqual(false);
   });
 
-  it("throws error if char is undefined", () => {
-    expect(() => isLetter()).toThrow(TypeError);
+  it("throws error if char is too long", () => {
+    expect(() => isLetter("abc")).toThrow(RangeError);
   });
 });
 
@@ -111,11 +111,11 @@ describe("isDigitString()", () => {
     expect(isDigitString(" ")).toEqual(false);
   });
 
-  it("throws error if too many digits", () => {
-    expect(() => isDigitString("12")).toThrow(RangeError);
+  it("returns false if undefined", () => {
+    expect(isDigitString()).toEqual(false);
   });
 
-  it("throws error if digit is undefined", () => {
-    expect(() => isDigitString()).toThrow(TypeError);
+  it("throws error if too many digits", () => {
+    expect(() => isDigitString("12")).toThrow(RangeError);
   });
 });
