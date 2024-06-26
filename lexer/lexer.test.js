@@ -151,6 +151,7 @@ describe("Lexer.nextToken()", () => {
       { type: token.ILLEGAL, literal: "." },
       { type: token.ILLEGAL, literal: "&" },
       { type: token.ILLEGAL, literal: "£" },
+      { type: token.EOF, literal: "" },
     ];
 
     expectedTokens.forEach((expectedToken) => {
