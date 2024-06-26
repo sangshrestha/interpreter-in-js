@@ -26,6 +26,14 @@ export class Lexer {
     this.peekIndex += 1;
   }
 
+  #peekChar() {
+    if (this.peekIndex > this.#input.length) {
+      return 0;
+    } else {
+      return this.#input[this.peekIndex];
+    }
+  }
+
   #skipWhitespace() {
     while ([" ", "\n", "\t", "\r"].includes(this.char)) {
       this.#updateIndex();
@@ -83,7 +91,13 @@ export class Lexer {
         break;
 
       case "=":
-        tok.type = token.ASSIGN;
+        if (this.#peekChar() === "=") {
+          this.#updateIndex();
+          tok.literal = "==";
+          tok.type = token.EQ;
+        } else {
+          tok.type = token.ASSIGN;
+        }
         break;
 
       case "+":
@@ -95,7 +109,13 @@ export class Lexer {
         break;
 
       case "!":
-        tok.type = token.BANG;
+        if (this.#peekChar() === "=") {
+          this.#updateIndex();
+          tok.literal = "!=";
+          tok.type = token.NOT_EQ;
+        } else {
+          tok.type = token.BANG;
+        }
         break;
 
       case "*":
@@ -128,6 +148,8 @@ export class Lexer {
           tok.literal = this.#readDigit();
           tok.type = token.INT;
           return tok;
+        } else {
+          tok.type = token.ILLEGAL;
         }
     }
 

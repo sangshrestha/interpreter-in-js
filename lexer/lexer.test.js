@@ -120,6 +120,37 @@ describe("Lexer.nextToken()", () => {
       { type: token.INT, literal: "01" },
       { type: token.INT, literal: "2345678" },
       { type: token.INT, literal: "90000000000000" },
+      { type: token.EOF, literal: "" },
+    ];
+
+    expectedTokens.forEach((expectedToken) => {
+      expect(testLexer.nextToken()).toEqual(expectedToken);
+    });
+  });
+
+  it("assigns token for double char operators", () => {
+    const testString = "== !=";
+    const testLexer = new Lexer(testString);
+
+    const expectedTokens = [
+      { type: token.EQ, literal: "==" },
+      { type: token.NOT_EQ, literal: "!=" },
+      { type: token.EOF, literal: "" },
+    ];
+
+    expectedTokens.forEach((expectedToken) => {
+      expect(testLexer.nextToken()).toEqual(expectedToken);
+    });
+  });
+
+  it("assigns illegal tokens", () => {
+    const testString = ".&£";
+    const testLexer = new Lexer(testString);
+
+    const expectedTokens = [
+      { type: token.ILLEGAL, literal: "." },
+      { type: token.ILLEGAL, literal: "&" },
+      { type: token.ILLEGAL, literal: "£" },
     ];
 
     expectedTokens.forEach((expectedToken) => {
