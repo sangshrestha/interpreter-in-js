@@ -29,3 +29,17 @@ export const ILLEGAL = "ILLEGAL",
   IF = "IF",
   ELSE = "ELSE",
   RETURN = "RETURN";
+
+const keywords = {
+  fn: FUNCTION,
+  let: LET,
+  true: TRUE,
+  false: FALSE,
+  if: IF,
+  else: ELSE,
+  return: RETURN,
+};
+
+export function lookupIdent(ident) {
+  return keywords[ident] || IDENT;
+}
