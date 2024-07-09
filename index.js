@@ -1,5 +1,4 @@
 import readline from "node:readline/promises";
-
 import { Lexer } from "./lexer/lexer.js";
 
 while (true) {

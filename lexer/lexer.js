@@ -63,97 +63,92 @@ export class Lexer {
   nextToken() {
     this.#skipWhitespace();
 
-    const tok = { literal: this.char };
+    let thisToken;
+    let tok = {};
 
     switch (this.char) {
       case ",":
-        tok.type = token.COMMA;
+        thisToken = token.Token(token.COMMA, this.char);
         break;
 
       case ";":
-        tok.type = token.SEMICOLON;
+        thisToken = token.Token(token.SEMICOLON, this.char);
         break;
 
       case "(":
-        tok.type = token.LPAREN;
+        thisToken = token.Token(token.LPAREN, this.char);
         break;
 
       case ")":
-        tok.type = token.RPAREN;
+        thisToken = token.Token(token.RPAREN, this.char);
         break;
 
       case "{":
-        tok.type = token.LBRACE;
+        thisToken = token.Token(token.LBRACE, this.char);
         break;
 
       case "}":
-        tok.type = token.RBRACE;
+        thisToken = token.Token(token.RBRACE, this.char);
         break;
 
       case "=":
         if (this.#peekChar() === "=") {
           this.#updateIndex();
-          tok.literal = "==";
-          tok.type = token.EQ;
+          thisToken = token.Token(token.EQ, "==");
         } else {
-          tok.type = token.ASSIGN;
+          thisToken = token.Token(token.ASSIGN, this.char);
         }
         break;
 
       case "+":
-        tok.type = token.PLUS;
+        thisToken = token.Token(token.PLUS, this.char);
         break;
 
       case "-":
-        tok.type = token.MINUS;
+        thisToken = token.Token(token.MINUS, this.char);
         break;
 
       case "!":
         if (this.#peekChar() === "=") {
           this.#updateIndex();
-          tok.literal = "!=";
-          tok.type = token.NOT_EQ;
+          thisToken = token.Token(token.NOT_EQ, "!=");
         } else {
-          tok.type = token.BANG;
+          thisToken = token.Token(token.BANG, this.char);
         }
         break;
 
       case "*":
-        tok.type = token.ASTERISK;
+        thisToken = token.Token(token.ASTERISK, this.char);
         break;
 
       case "/":
-        tok.type = token.SLASH;
+        thisToken = token.Token(token.SLASH, this.char);
         break;
 
       case "<":
-        tok.type = token.LT;
+        thisToken = token.Token(token.LT, this.char);
         break;
 
       case ">":
-        tok.type = token.GT;
+        thisToken = token.Token(token.GT, this.char);
         break;
 
       case 0:
-        tok.literal = "";
-        tok.type = token.EOF;
+        thisToken = token.Token(token.EOF, "");
         break;
 
       default:
         if (isLetter(this.char)) {
-          tok.literal = this.#readIdentifier();
-          tok.type = token.lookupIdent(tok.literal);
-          return tok;
+          const ident = this.#readIdentifier();
+          return token.Token(token.lookupIdent(ident), ident);
         } else if (isDigitString(this.char)) {
-          tok.literal = this.#readDigit();
-          tok.type = token.INT;
-          return tok;
+          return token.Token(token.INT, this.#readDigit());
         } else {
-          tok.type = token.ILLEGAL;
+          thisToken = token.Token(token.ILLEGAL, this.char);
         }
     }
 
     this.#updateIndex();
-    return tok;
+    return thisToken;
   }
 }

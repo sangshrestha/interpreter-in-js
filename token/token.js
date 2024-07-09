@@ -43,3 +43,11 @@ const keywords = {
 export function lookupIdent(ident) {
   return keywords[ident] || IDENT;
 }
+
+export function Token(type, literal) {
+  const nullObj = Object.prototype.constructor.call(null);
+  nullObj.type = type;
+  nullObj.literal = literal;
+
+  return nullObj;
+}
