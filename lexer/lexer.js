@@ -65,7 +65,6 @@ export class Lexer {
     this.#skipWhitespace();
 
     let thisToken;
-    let tok = {};
 
     switch (this.char) {
       case ",":
