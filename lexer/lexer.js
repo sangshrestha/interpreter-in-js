@@ -1,5 +1,6 @@
 import * as token from "#root/token/token.js";
 import { isDigitString, isLetter } from "#root/utility.js";
+
 export class Lexer {
   #input;
 
