@@ -9,9 +9,9 @@ while (true) {
 
   const code = await rl.question(">> ");
 
-  const inputLexer = new Lexer(code);
+  const inputLexer = Lexer(code);
 
-  while (inputLexer.char !== 0) {
+  while (inputLexer.getChar() !== 0) {
     console.log(inputLexer.nextToken());
   }
 
