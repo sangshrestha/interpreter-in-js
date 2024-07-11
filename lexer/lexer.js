@@ -1,136 +1,128 @@
 import * as token from "../token/token.js";
 import { isDigitString, isLetter } from "../utility.js";
 
-export class Lexer {
-  #input;
 
-  constructor(input) {
-    this.#input = input;
-    this.index = 0;
-    this.peekIndex = 1;
-  }
+export function Lexer(input) {
+  let index = 0;
+  let peekIndex = 1;
 
-  get input() {
-    return this.#input;
-  }
-
-  get char() {
-    if (this.peekIndex > this.#input.length) {
+  function getChar() {
+    if (peekIndex > input.length) {
       return 0;
     } else {
-      return this.#input[this.index];
+      return input[index];
     }
   }
 
-  #updateIndex() {
-    this.index = this.peekIndex;
-    this.peekIndex += 1;
-  }
-
-  #peekChar() {
-    if (this.peekIndex > this.#input.length) {
+  function peekChar() {
+    if (peekIndex > input.length) {
       return 0;
     } else {
-      return this.#input[this.peekIndex];
+      return input[peekIndex];
     }
   }
 
-  #skipWhitespace() {
-    while ([" ", "\n", "\t", "\r"].includes(this.char)) {
-      this.#updateIndex();
+  function updateIndex() {
+    index = peekIndex;
+    peekIndex += 1;
+  }
+
+  function skipWhitespace() {
+    while ([" ", "\n", "\t", "\r"].includes(getChar())) {
+      updateIndex();
     }
   }
 
-  #readIdentifier() {
-    const startIndex = this.index;
+  function readIdentifier() {
+    const startIndex = index;
 
-    while (isLetter(this.char)) {
-      this.#updateIndex();
+    while (isLetter(getChar())) {
+      updateIndex();
     }
 
-    return this.#input.slice(startIndex, this.index);
+    return input.slice(startIndex, index);
   }
 
-  #readDigit() {
-    const startIndex = this.index;
+  function readDigit() {
+    const startIndex = index;
 
-    while (isDigitString(this.char)) {
-      this.#updateIndex();
+    while (isDigitString(getChar())) {
+      updateIndex();
     }
 
-    return this.#input.slice(startIndex, this.index);
+    return input.slice(startIndex, index);
   }
 
-  nextToken() {
-    this.#skipWhitespace();
+  function nextToken() {
+    skipWhitespace();
 
     let thisToken;
 
-    switch (this.char) {
+    switch (getChar()) {
       case ",":
-        thisToken = token.Token(token.COMMA, this.char);
+        thisToken = token.Token(token.COMMA, getChar());
         break;
 
       case ";":
-        thisToken = token.Token(token.SEMICOLON, this.char);
+        thisToken = token.Token(token.SEMICOLON, getChar());
         break;
 
       case "(":
-        thisToken = token.Token(token.LPAREN, this.char);
+        thisToken = token.Token(token.LPAREN, getChar());
         break;
 
       case ")":
-        thisToken = token.Token(token.RPAREN, this.char);
+        thisToken = token.Token(token.RPAREN, getChar());
         break;
 
       case "{":
-        thisToken = token.Token(token.LBRACE, this.char);
+        thisToken = token.Token(token.LBRACE, getChar());
         break;
 
       case "}":
-        thisToken = token.Token(token.RBRACE, this.char);
+        thisToken = token.Token(token.RBRACE, getChar());
         break;
 
       case "=":
-        if (this.#peekChar() === "=") {
-          this.#updateIndex();
+        if (peekChar() === "=") {
+          updateIndex();
           thisToken = token.Token(token.EQ, "==");
         } else {
-          thisToken = token.Token(token.ASSIGN, this.char);
+          thisToken = token.Token(token.ASSIGN, getChar());
         }
         break;
 
       case "+":
-        thisToken = token.Token(token.PLUS, this.char);
+        thisToken = token.Token(token.PLUS, getChar());
         break;
 
       case "-":
-        thisToken = token.Token(token.MINUS, this.char);
+        thisToken = token.Token(token.MINUS, getChar());
         break;
 
       case "!":
-        if (this.#peekChar() === "=") {
-          this.#updateIndex();
+        if (peekChar() === "=") {
+          updateIndex();
           thisToken = token.Token(token.NOT_EQ, "!=");
         } else {
-          thisToken = token.Token(token.BANG, this.char);
+          thisToken = token.Token(token.BANG, getChar());
         }
         break;
 
       case "*":
-        thisToken = token.Token(token.ASTERISK, this.char);
+        thisToken = token.Token(token.ASTERISK, getChar());
         break;
 
       case "/":
-        thisToken = token.Token(token.SLASH, this.char);
+        thisToken = token.Token(token.SLASH, getChar());
         break;
 
       case "<":
-        thisToken = token.Token(token.LT, this.char);
+        thisToken = token.Token(token.LT, getChar());
         break;
 
       case ">":
-        thisToken = token.Token(token.GT, this.char);
+        thisToken = token.Token(token.GT, getChar());
         break;
 
       case 0:
@@ -138,17 +130,21 @@ export class Lexer {
         break;
 
       default:
-        if (isLetter(this.char)) {
-          const ident = this.#readIdentifier();
+        if (isLetter(getChar())) {
+          const ident = readIdentifier();
           return token.Token(token.lookupIdent(ident), ident);
-        } else if (isDigitString(this.char)) {
-          return token.Token(token.INT, this.#readDigit());
+        } else if (isDigitString(getChar())) {
+          return token.Token(token.INT, readDigit());
         } else {
-          thisToken = token.Token(token.ILLEGAL, this.char);
+          thisToken = token.Token(token.ILLEGAL, getChar());
         }
     }
 
-    this.#updateIndex();
+    updateIndex();
     return thisToken;
+  }
+
+  return {
+    nextToken
   }
 }
