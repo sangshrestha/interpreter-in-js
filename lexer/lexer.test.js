@@ -1,5 +1,5 @@
 import { Lexer } from "./lexer";
-import * as token from "#root/token/token.js";
+import * as token from "../token/token.js";
 
 describe("Lexer.nextToken()", () => {
   it("assigns token for delimiters", () => {
