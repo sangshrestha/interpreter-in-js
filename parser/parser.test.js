@@ -14,5 +14,23 @@ let foobar = 384783;
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(expectedIdentifiers.length)
   })
+
+  it("outputs token literal 'let'", () => {
+    program.statements.forEach(statement => {
+      expect(statement.tokenLiteral()).toEqual("let")
+    });
+  })
+
+  it("outputs correct identifiers", () => {
+    program.statements.forEach((statement, index) => {
+      expect(statement.identifier.value).toEqual(expectedIdentifiers[index])
+    });
+  })
+
+  it("outputs correct identifier token literals", () => {
+    program.statements.forEach((statement, index) => {
+      expect(statement.identifier.tokenLiteral()).toEqual(expectedIdentifiers[index])
+    });
+  })
 })
 

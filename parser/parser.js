@@ -32,18 +32,15 @@ export function Parser(lexer) {
     const letToken = currentToken;
 
     if (!expectPeek(token.IDENT)) {
-      console.log("ident peek")
       return null;
     }
 
     const letIdentifier = Identifier(currentToken, currentToken.literal)
-    console.log(letIdentifier)
     if (!expectPeek(token.ASSIGN)) {
       return null;
     }
 
     while (currentToken.type !== token.SEMICOLON) {
-      console.log(currentToken)
       advanceToken();
     }
 
@@ -52,7 +49,6 @@ export function Parser(lexer) {
 
 
   function parseStatement() {
-    console.log(currentToken, token.LET, currentToken.type === token.LET)
     switch (currentToken.type) {
       case token.LET:
         return parseLetStatement();
@@ -67,8 +63,6 @@ export function Parser(lexer) {
 
     while (currentToken.type !== token.EOF) {
       const statement = parseStatement();
-
-      console.log(statement);
 
       if (statement !== null) {
         statements.push(statement);
@@ -89,7 +83,4 @@ export function Parser(lexer) {
 
 // TODO: Remove this log
 let myParser = Parser(Lexer("let kekw = 5;"))
-console.log("Parser: ", myParser);
-console.log("currentToken: ", myParser.getCurrentToken())
-console.log("advanceToken: ", myParser.getPeekToken())
-myParser.parseProgram();
+console.log("Parser: ", JSON.stringify(myParser.parseProgram()));
