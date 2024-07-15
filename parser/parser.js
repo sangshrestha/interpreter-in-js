@@ -1,6 +1,6 @@
 import * as token from "../token/token.js";
 import { Lexer } from "../lexer/lexer.js";
-import { Identifier, LetStatement, Program } from "../ast/ast.js";
+import { Identifier, LetStatement, Program, ReturnStatement } from "../ast/ast.js";
 
 export function Parser(lexer) {
   let currentToken = lexer.nextToken();
@@ -57,11 +57,24 @@ export function Parser(lexer) {
     return LetStatement(letToken, letIdentifier, null)
   }
 
+  function parseReturnStatement() {
+    const returnToken = currentToken;
+
+    advanceToken();
+
+    while (currentToken.type !== token.SEMICOLON) {
+      advanceToken();
+    }
+
+    return ReturnStatement(returnToken, null);
+  }
 
   function parseStatement() {
     switch (currentToken.type) {
       case token.LET:
         return parseLetStatement();
+      case token.RETURN:
+        return parseReturnStatement();
       default:
         return null;
     }

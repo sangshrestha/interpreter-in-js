@@ -44,3 +44,24 @@ let foobar = 384783;
   })
 })
 
+describe("Parse return statements", () => {
+  const input = `
+return 5;
+return 10;
+return 2993892;
+`
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(3)
+  })
+
+  it("outputs token literal 'return'", () => {
+    program.statements.forEach(statement => {
+      expect(statement.tokenLiteral()).toEqual("return")
+    });
+  })
+})
+

@@ -39,6 +39,14 @@ export function LetStatement(token, identifier, expression) {
   }
 }
 
+export function ReturnStatement(token, expression) {
+  return {
+    token,
+    expression,
+    ...Statement(token)
+  }
+}
+
 export function Program(statements) {
   function tokenLiteral() {
     if (statements.length > 0) {
