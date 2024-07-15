@@ -1,15 +1,25 @@
 import { Parser } from "./parser";
 import { Lexer } from "../lexer/lexer";
 
+function checkParserErrors(parser) {
+  const errors = parser.getErrors();
+
+  if (errors.length > 0) {
+    throw new Error(`Parser encountered ${errors.length} errors:\n${errors.join("\n")}`)
+  }
+}
+
 describe("Parse let statements", () => {
   const input = `
-let x = 5;
+let x  = 5;
 let y = 10;
 let foobar = 384783;
 `
   const expectedIdentifiers = ["x", "y", "foobar"];
 
-  const program = Parser(Lexer(input)).parseProgram();
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(expectedIdentifiers.length)

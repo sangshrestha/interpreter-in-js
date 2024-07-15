@@ -5,6 +5,7 @@ import { Identifier, LetStatement, Program } from "../ast/ast.js";
 export function Parser(lexer) {
   let currentToken = lexer.nextToken();
   let peekToken = lexer.nextToken();
+  const errors = [];
 
   function getCurrentToken() {
     return currentToken;
@@ -14,9 +15,17 @@ export function Parser(lexer) {
     return peekToken;
   }
 
+  function getErrors() {
+    return errors;
+  }
+
   function advanceToken() {
     currentToken = peekToken;
     peekToken = lexer.nextToken();
+  }
+
+  function peekError(tokenType) {
+    errors.push(`Expected token ${tokenType}, got ${peekToken.type}`)
   }
 
   function expectPeek(tokenType) {
@@ -24,6 +33,7 @@ export function Parser(lexer) {
       advanceToken();
       return true;
     } else {
+      peekError(tokenType);
       return false;
     }
   }
@@ -76,11 +86,8 @@ export function Parser(lexer) {
   return {
     getCurrentToken,
     getPeekToken,
+    getErrors,
     advanceToken,
     parseProgram
   }
 }
-
-// TODO: Remove this log
-let myParser = Parser(Lexer("let kekw = 5;"))
-console.log("Parser: ", JSON.stringify(myParser.parseProgram()));
