@@ -19,6 +19,7 @@ let foobar = 384783;
 
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
+  console.log("Program string: ", program.string());
   checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
@@ -52,6 +53,7 @@ return 2993892;
 `
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
+  console.log("Program string: ", program.string());
   checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {

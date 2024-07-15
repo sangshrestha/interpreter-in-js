@@ -1,49 +1,74 @@
 // Abstract Syntax Tree
 
-export function Node(token) {
+export function Node(token, string) {
   function tokenLiteral() {
     return token.literal
   }
 
   return {
-    tokenLiteral
+    tokenLiteral,
+    string
   }
 }
 
-export function Statement(token) {
+export function Statement(token, string) {
   return {
-    ...Node(token)
+    ...Node(token, string)
   }
 }
 
-export function Expression(token) {
+export function Expression(token, string) {
   return {
-    ...Node(token)
+    ...Node(token, string)
   }
 }
 
 export function Identifier(token, value) {
+  function string() {
+    return value;
+  }
+
   return {
     token,
     value,
-    ...Expression(token)
+    ...Expression(token, string)
   }
 }
 
-export function LetStatement(token, identifier, expression) {
+export function LetStatement(token, identifier, value) {
+  function string() {
+    return `${this.tokenLiteral()} ${identifier.string()} = ${value === null ? "" : value.string()};`
+  }
+
   return {
     token,
     identifier,
-    expression,
-    ...Statement(token)
+    value,
+    ...Statement(token, string)
   }
 }
 
-export function ReturnStatement(token, expression) {
+export function ReturnStatement(token, value) {
+  function string() {
+    return `${this.tokenLiteral()} ${value === null ? "" : value.string()};`
+  }
+
+  return {
+    token,
+    value,
+    ...Statement(token, string)
+  }
+}
+
+export function ExpressionStatement(token, expression) {
+  function string() {
+    return `${expression === null ? "" : expression.string()}`
+  }
+
   return {
     token,
     expression,
-    ...Statement(token)
+    ...Statement(token, string)
   }
 }
 
@@ -56,8 +81,13 @@ export function Program(statements) {
     }
   }
 
+  function string() {
+    return statements.map(statement => statement.string()).join("");
+  }
+
   return {
     statements,
-    tokenLiteral
+    tokenLiteral,
+    string
   }
 }
