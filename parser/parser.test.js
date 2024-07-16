@@ -19,7 +19,6 @@ let foobar = 384783;
 
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
-  console.log("Program string: ", program.string());
   checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
@@ -53,7 +52,6 @@ return 2993892;
 `
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
-  console.log("Program string: ", program.string());
   checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
@@ -63,6 +61,30 @@ return 2993892;
   it("outputs token literal 'return'", () => {
     program.statements.forEach(statement => {
       expect(statement.tokenLiteral()).toEqual("return")
+    });
+  })
+})
+
+describe("Parse identifier expression", () => {
+  const input = "foobar;"
+
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  })
+
+  it("outputs correct identifier value", () => {
+    program.statements.forEach(statement => {
+      expect(statement.expression.value).toEqual("foobar");
+    });
+  })
+
+  it("outputs correct token literal", () => {
+    program.statements.forEach(statement => {
+      expect(statement.expression.tokenLiteral()).toEqual("foobar");
     });
   })
 })

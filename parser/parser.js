@@ -1,11 +1,22 @@
 import * as token from "../token/token.js";
-import { Lexer } from "../lexer/lexer.js";
-import { Identifier, LetStatement, Program, ReturnStatement } from "../ast/ast.js";
+import { ExpressionStatement, Identifier, LetStatement, Program, ReturnStatement } from "../ast/ast.js";
+
+const LOWEST = -1,
+  EQUALS = 1,
+  LESSGREATER = 2,
+  SUM = 3,
+  PRODUCT = 4,
+  PREFIX = 5,
+  CALL = 6
 
 export function Parser(lexer) {
   let currentToken = lexer.nextToken();
   let peekToken = lexer.nextToken();
+
   const errors = [];
+
+  const prefixParseFns = { [token.IDENT]: parseIdentifier };
+  const infixParseFns = {};
 
   function getCurrentToken() {
     return currentToken;
@@ -18,6 +29,14 @@ export function Parser(lexer) {
   function getErrors() {
     return errors;
   }
+
+  // function registerPrefix(tokenType, prefixParseFn) {
+  //   prefixParseFns[tokenType] = prefixParseFn;
+  // }
+  //
+  // function registerInfix(tokenType, infixParseFn) {
+  //   infixParseFns[tokenType] = infixParseFn;
+  // }
 
   function advanceToken() {
     currentToken = peekToken;
@@ -36,6 +55,10 @@ export function Parser(lexer) {
       peekError(tokenType);
       return false;
     }
+  }
+
+  function parseIdentifier() {
+    return Identifier(currentToken, currentToken.literal);
   }
 
   function parseLetStatement() {
@@ -69,6 +92,26 @@ export function Parser(lexer) {
     return ReturnStatement(returnToken, null);
   }
 
+  function parseExpression(precedence) {
+    const prefixFn = prefixParseFns[currentToken.type];
+
+    if (prefixFn === undefined) {
+      return null;
+    }
+
+    return prefixFn();
+  }
+
+  function parseExpressionStatement() {
+    const expression = parseExpression(LOWEST);
+
+    if (peekToken.type === token.SEMICOLON) {
+      advanceToken();
+    }
+
+    return ExpressionStatement(currentToken, expression)
+  }
+
   function parseStatement() {
     switch (currentToken.type) {
       case token.LET:
@@ -76,7 +119,7 @@ export function Parser(lexer) {
       case token.RETURN:
         return parseReturnStatement();
       default:
-        return null;
+        return parseExpressionStatement();
     }
 
   }
