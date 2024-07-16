@@ -64,7 +64,7 @@ export function PrefixExpression(token, operator, rightExp) {
 
 export function LetStatement(token, identifier, value) {
   function string() {
-    return `${this.tokenLiteral()} ${identifier.string()} = ${value === null ? "" : value.string()};`
+    return `${token.literal} ${identifier.string()} = ${value === null ? "" : value.string()};`
   }
 
   return {
@@ -78,7 +78,7 @@ export function LetStatement(token, identifier, value) {
 
 export function ReturnStatement(token, value) {
   function string() {
-    return `${this.tokenLiteral()} ${value === null ? "" : value.string()};`
+    return `${token.literal} ${value === null ? "" : value.string()};`
   }
 
   return {
