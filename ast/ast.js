@@ -47,6 +47,19 @@ export function IntegerLiteral(token, value) {
   }
 }
 
+export function PrefixExpression(token, operator, rightExp) {
+  function string() {
+    return `{${operator}${rightExp.string()})`;
+  }
+
+  return {
+    token,
+    operator,
+    rightExp,
+    ...Expression(token, string)
+  }
+}
+
 export function LetStatement(token, identifier, value) {
   function string() {
     return `${this.tokenLiteral()} ${identifier.string()} = ${value === null ? "" : value.string()};`

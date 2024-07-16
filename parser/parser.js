@@ -1,5 +1,5 @@
 import * as token from "../token/token.js";
-import { ExpressionStatement, Identifier, IntegerLiteral, LetStatement, Program, ReturnStatement } from "../ast/ast.js";
+import { ExpressionStatement, Identifier, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement } from "../ast/ast.js";
 
 const LOWEST = -1,
   EQUALS = 1,
@@ -15,7 +15,13 @@ export function Parser(lexer) {
 
   const errors = [];
 
-  const prefixParseFns = { [token.IDENT]: parseIdentifier, [token.INT]: parseIntegerLiteral };
+  const prefixParseFns = {
+    [token.IDENT]: parseIdentifier,
+    [token.INT]: parseIntegerLiteral,
+    [token.BANG]: parsePrefixExpression,
+    [token.MINUS]: parsePrefixExpression
+  };
+
   const infixParseFns = {};
 
   function getCurrentToken() {
@@ -72,6 +78,17 @@ export function Parser(lexer) {
     return IntegerLiteral(currentToken, value);
   }
 
+  function parsePrefixExpression() {
+    const startToken = currentToken;
+    const operator = currentToken.literal;
+
+    advanceToken();
+
+    const rightExp = parseExpression(PREFIX);
+
+    return PrefixExpression(startToken, operator, rightExp);
+  }
+
   function parseLetStatement() {
     const letToken = currentToken;
 
@@ -107,6 +124,7 @@ export function Parser(lexer) {
     const prefixFn = prefixParseFns[currentToken.type];
 
     if (prefixFn === undefined) {
+      errors.push(`No prefix parse function found for ${currentToken.type}`);
       return null;
     }
 

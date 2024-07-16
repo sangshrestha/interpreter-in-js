@@ -113,3 +113,32 @@ describe("Parse integer literal expression", () => {
   })
 })
 
+describe("Parse prefix expressions", () => {
+  const tests = [
+    { input: "!foobar;", operator: "!", value: "foobar" },
+    { input: "-15;", operator: "-", value: 15 }
+  ];
+
+  tests.forEach(test => {
+    const parser = Parser(Lexer(test.input));
+    const program = parser.parseProgram();
+    checkParserErrors(parser);
+
+    it("outputs expected number of statements", () => {
+      expect(program.statements.length).toEqual(1);
+    })
+
+    it("outputs correct operator", () => {
+      expect(program.statements[0].expression.operator).toEqual(test.operator);
+    })
+
+    it("outputs correct value", () => {
+      expect(program.statements[0].expression.rightExp.value).toEqual(test.value);
+    })
+
+    it("outputs correct token literal", () => {
+      expect(program.statements[0].expression.rightExp.tokenLiteral()).toEqual(test.value.toString());
+    })
+
+  })
+})
