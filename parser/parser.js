@@ -1,5 +1,5 @@
 import * as token from "../token/token.js";
-import { ExpressionStatement, Identifier, LetStatement, Program, ReturnStatement } from "../ast/ast.js";
+import { ExpressionStatement, Identifier, IntegerLiteral, LetStatement, Program, ReturnStatement } from "../ast/ast.js";
 
 const LOWEST = -1,
   EQUALS = 1,
@@ -15,7 +15,7 @@ export function Parser(lexer) {
 
   const errors = [];
 
-  const prefixParseFns = { [token.IDENT]: parseIdentifier };
+  const prefixParseFns = { [token.IDENT]: parseIdentifier, [token.INT]: parseIntegerLiteral };
   const infixParseFns = {};
 
   function getCurrentToken() {
@@ -59,6 +59,17 @@ export function Parser(lexer) {
 
   function parseIdentifier() {
     return Identifier(currentToken, currentToken.literal);
+  }
+
+  function parseIntegerLiteral() {
+    const value = parseInt(currentToken.literal, 10);
+
+    if (isNaN(value)) {
+      errors.push(`Could not parse ${currentToken.literal} as int`);
+      return null;
+    }
+
+    return IntegerLiteral(currentToken, value);
   }
 
   function parseLetStatement() {

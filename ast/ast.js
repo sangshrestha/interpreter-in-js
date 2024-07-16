@@ -35,6 +35,18 @@ export function Identifier(token, value) {
   }
 }
 
+export function IntegerLiteral(token, value) {
+  function string() {
+    return token.literal;
+  }
+
+  return {
+    token,
+    value,
+    ...Expression(token, string)
+  }
+}
+
 export function LetStatement(token, identifier, value) {
   function string() {
     return `${this.tokenLiteral()} ${identifier.string()} = ${value === null ? "" : value.string()};`

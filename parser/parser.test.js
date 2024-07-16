@@ -89,3 +89,27 @@ describe("Parse identifier expression", () => {
   })
 })
 
+describe("Parse integer literal expression", () => {
+  const input = "5;"
+
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  })
+
+  it("outputs correct identifier value", () => {
+    program.statements.forEach(statement => {
+      expect(statement.expression.value).toEqual(5);
+    });
+  })
+
+  it("outputs correct token literal", () => {
+    program.statements.forEach(statement => {
+      expect(statement.expression.tokenLiteral()).toEqual("5");
+    });
+  })
+})
+
