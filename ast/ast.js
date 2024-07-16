@@ -1,25 +1,24 @@
 // Abstract Syntax Tree
 
-export function Node(token, string) {
+export function Node(token) {
   function tokenLiteral() {
     return token.literal
   }
 
   return {
-    tokenLiteral,
-    string
+    tokenLiteral
   }
 }
 
-export function Statement(token, string) {
+export function Statement(token) {
   return {
-    ...Node(token, string)
+    ...Node(token)
   }
 }
 
-export function Expression(token, string) {
+export function Expression(token) {
   return {
-    ...Node(token, string)
+    ...Node(token)
   }
 }
 
@@ -31,7 +30,8 @@ export function Identifier(token, value) {
   return {
     token,
     value,
-    ...Expression(token, string)
+    string,
+    ...Expression(token)
   }
 }
 
@@ -43,7 +43,8 @@ export function IntegerLiteral(token, value) {
   return {
     token,
     value,
-    ...Expression(token, string)
+    string,
+    ...Expression(token)
   }
 }
 
@@ -56,7 +57,8 @@ export function PrefixExpression(token, operator, rightExp) {
     token,
     operator,
     rightExp,
-    ...Expression(token, string)
+    string,
+    ...Expression(token)
   }
 }
 
@@ -69,7 +71,8 @@ export function LetStatement(token, identifier, value) {
     token,
     identifier,
     value,
-    ...Statement(token, string)
+    string,
+    ...Statement(token)
   }
 }
 
@@ -81,7 +84,8 @@ export function ReturnStatement(token, value) {
   return {
     token,
     value,
-    ...Statement(token, string)
+    string,
+    ...Statement(token)
   }
 }
 
@@ -93,7 +97,8 @@ export function ExpressionStatement(token, expression) {
   return {
     token,
     expression,
-    ...Statement(token, string)
+    string,
+    ...Statement(token)
   }
 }
 

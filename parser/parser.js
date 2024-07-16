@@ -36,14 +36,6 @@ export function Parser(lexer) {
     return errors;
   }
 
-  // function registerPrefix(tokenType, prefixParseFn) {
-  //   prefixParseFns[tokenType] = prefixParseFn;
-  // }
-  //
-  // function registerInfix(tokenType, infixParseFn) {
-  //   infixParseFns[tokenType] = infixParseFn;
-  // }
-
   function advanceToken() {
     currentToken = peekToken;
     peekToken = lexer.nextToken();
