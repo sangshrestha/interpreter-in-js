@@ -181,3 +181,27 @@ describe.each([
     expect(program.statements[0].expression.rightExp.tokenLiteral()).toEqual(rightVal.toString());
   })
 })
+
+describe.each([
+  ["-a * b", "((-a) * b)"],
+  ["!-a", "(!(-a))"],
+  ["a + b + c", "((a + b) + c)"],
+  ["a + b - c", "((a + b) - c)"],
+  ["a * b * c", "((a * b) * c)"],
+  ["a * b / c", "((a * b) / c)"],
+  ["a + b / c", "(a + (b / c))"],
+  ["a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)"],
+  ["3 + 4; -5 * 5", "(3 + 4)((-5) * 5)"],
+  ["5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"],
+  ["5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"],
+  ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"],
+  ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"]
+])("Operator precedence", (input, expected) => {
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected program string", () => {
+    expect(program.string()).toEqual(expected);
+  })
+})
