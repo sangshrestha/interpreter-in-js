@@ -142,3 +142,42 @@ describe("Parse prefix expressions", () => {
 
   })
 })
+
+describe.each([
+  ["7 + 5;", 7, "+", 5],
+  ["7 - 5;", 7, "-", 5],
+  ["7 * 5;", 7, "*", 5],
+  ["7 / 5;", 7, "/", 5],
+  ["7 > 5;", 7, ">", 5],
+  ["7 < 5;", 7, "<", 5],
+  ["7 == 5;", 7, "==", 5],
+  ["7 != 5;", 7, "!=", 5],
+])("Parse infix expressions", (input, leftVal, operator, rightVal) => {
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  })
+
+  it("outputs correct operator", () => {
+    expect(program.statements[0].expression.operator).toEqual(operator);
+  })
+
+  it("outputs correct left value", () => {
+    expect(program.statements[0].expression.leftExp.value).toEqual(leftVal);
+  })
+
+  it("outputs correct left value literal", () => {
+    expect(program.statements[0].expression.leftExp.tokenLiteral()).toEqual(leftVal.toString());
+  })
+
+  it("outputs correct right value", () => {
+    expect(program.statements[0].expression.rightExp.value).toEqual(rightVal);
+  })
+
+  it("outputs correct right value literal", () => {
+    expect(program.statements[0].expression.rightExp.tokenLiteral()).toEqual(rightVal.toString());
+  })
+})

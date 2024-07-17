@@ -50,11 +50,26 @@ export function IntegerLiteral(token, value) {
 
 export function PrefixExpression(token, operator, rightExp) {
   function string() {
-    return `{${operator}${rightExp.string()})`;
+    return `(${operator}${rightExp.string()})`;
   }
 
   return {
     token,
+    operator,
+    rightExp,
+    string,
+    ...Expression(token)
+  }
+}
+
+export function InfixExpression(token, leftExp, operator, rightExp) {
+  function string() {
+    return `(${leftExp.string()} ${operator} ${rightExp.string()})`;
+  }
+
+  return {
+    token,
+    leftExp,
     operator,
     rightExp,
     string,
