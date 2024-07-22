@@ -1,5 +1,14 @@
+import {
+  ExpressionStatement,
+  Identifier,
+  InfixExpression,
+  IntegerLiteral,
+  LetStatement,
+  PrefixExpression,
+  Program,
+  ReturnStatement,
+} from "../ast/ast.js";
 import * as token from "../token/token.js";
-import { ExpressionStatement, Identifier, InfixExpression, IntegerLiteral, LetStatement, PrefixExpression, Program, ReturnStatement } from "../ast/ast.js";
 
 const LOWEST = -1,
   EQUALS = 1,
@@ -7,7 +16,7 @@ const LOWEST = -1,
   SUM = 3,
   PRODUCT = 4,
   PREFIX = 5,
-  CALL = 6
+  CALL = 6;
 
 const precedences = {
   [token.EQ]: EQUALS,
@@ -18,7 +27,7 @@ const precedences = {
   [token.MINUS]: SUM,
   [token.SLASH]: PRODUCT,
   [token.ASTERISK]: PRODUCT,
-}
+};
 
 export function Parser(lexer) {
   let currentToken = lexer.nextToken();
@@ -30,7 +39,7 @@ export function Parser(lexer) {
     [token.IDENT]: parseIdentifier,
     [token.INT]: parseIntegerLiteral,
     [token.BANG]: parsePrefixExpression,
-    [token.MINUS]: parsePrefixExpression
+    [token.MINUS]: parsePrefixExpression,
   };
 
   const infixParseFns = {
@@ -62,7 +71,7 @@ export function Parser(lexer) {
   }
 
   function peekError(tokenType) {
-    errors.push(`Expected token ${tokenType}, got ${peekToken.type}`)
+    errors.push(`Expected token ${tokenType}, got ${peekToken.type}`);
   }
 
   function expectPeek(tokenType) {
@@ -105,15 +114,15 @@ export function Parser(lexer) {
     advanceToken();
 
     const rightExp = parseExpression(PREFIX);
-
     return PrefixExpression(startToken, operator, rightExp);
   }
 
   function parseInfixExpression(leftExp) {
     const token = currentToken;
-
     const precedence = getCurrentPrecedence();
+
     advanceToken();
+
     const rightExp = parseExpression(precedence);
     return InfixExpression(token, leftExp, token.literal, rightExp);
   }
@@ -125,16 +134,21 @@ export function Parser(lexer) {
       return null;
     }
 
-    const letIdentifier = Identifier(currentToken, currentToken.literal)
+    const letIdentifier = Identifier(currentToken, currentToken.literal);
+
     if (!expectPeek(token.ASSIGN)) {
       return null;
     }
 
-    while (currentToken.type !== token.SEMICOLON) {
+    advanceToken();
+
+    const letValue = parseExpression(LOWEST);
+
+    if (peekToken.type === token.SEMICOLON) {
       advanceToken();
     }
 
-    return LetStatement(letToken, letIdentifier, null)
+    return LetStatement(letToken, letIdentifier, letValue);
   }
 
   function parseReturnStatement() {
@@ -142,11 +156,13 @@ export function Parser(lexer) {
 
     advanceToken();
 
-    while (currentToken.type !== token.SEMICOLON) {
+    const returnValue = parseExpression(LOWEST);
+
+    if (peekToken.type === token.SEMICOLON) {
       advanceToken();
     }
 
-    return ReturnStatement(returnToken, null);
+    return ReturnStatement(returnToken, returnValue);
   }
 
   function parseExpression(precedence) {
@@ -159,7 +175,10 @@ export function Parser(lexer) {
 
     let leftExp = prefixFn();
 
-    while (peekToken.type !== token.SEMICOLON && precedence < getPeekPrecedence()) {
+    while (
+      peekToken.type !== token.SEMICOLON &&
+      precedence < getPeekPrecedence()
+    ) {
       const infixFn = infixParseFns[peekToken.type];
 
       if (infixFn === undefined) {
@@ -181,19 +200,20 @@ export function Parser(lexer) {
       advanceToken();
     }
 
-    return ExpressionStatement(currentToken, expression)
+    return ExpressionStatement(currentToken, expression);
   }
 
   function parseStatement() {
     switch (currentToken.type) {
       case token.LET:
         return parseLetStatement();
+
       case token.RETURN:
         return parseReturnStatement();
+
       default:
         return parseExpressionStatement();
     }
-
   }
 
   function parseProgram() {
@@ -216,6 +236,6 @@ export function Parser(lexer) {
     getPeekToken,
     getErrors,
     advanceToken,
-    parseProgram
-  }
+    parseProgram,
+  };
 }
