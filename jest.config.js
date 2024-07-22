@@ -1,4 +1,4 @@
 export default {
   transform: {},
-  verbose: true,
+  verbose: false,
 };
