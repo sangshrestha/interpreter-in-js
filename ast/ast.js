@@ -2,24 +2,26 @@
 
 export function Node(token) {
   function tokenLiteral() {
-    return token.literal
+    return token.literal;
   }
 
   return {
-    tokenLiteral
-  }
+    tokenLiteral,
+  };
 }
 
 export function Statement(token) {
   return {
-    ...Node(token)
-  }
+    isStatement: () => {}, // empty function by design
+    ...Node(token),
+  };
 }
 
 export function Expression(token) {
   return {
-    ...Node(token)
-  }
+    isExpression: () => {}, // empty function by design
+    ...Node(token),
+  };
 }
 
 export function Identifier(token, value) {
@@ -28,11 +30,12 @@ export function Identifier(token, value) {
   }
 
   return {
+    isIdentifier: () => {}, // empty function by design
     token,
     value,
     string,
-    ...Expression(token)
-  }
+    ...Expression(token),
+  };
 }
 
 export function IntegerLiteral(token, value) {
@@ -41,11 +44,12 @@ export function IntegerLiteral(token, value) {
   }
 
   return {
+    isIntegerLiteral: () => {}, // empty function by design
     token,
     value,
     string,
-    ...Expression(token)
-  }
+    ...Expression(token),
+  };
 }
 
 export function PrefixExpression(token, operator, rightExp) {
@@ -54,12 +58,13 @@ export function PrefixExpression(token, operator, rightExp) {
   }
 
   return {
+    isPrefixExpression: () => {}, // empty function by design
     token,
     operator,
     rightExp,
     string,
-    ...Expression(token)
-  }
+    ...Expression(token),
+  };
 }
 
 export function InfixExpression(token, leftExp, operator, rightExp) {
@@ -68,71 +73,75 @@ export function InfixExpression(token, leftExp, operator, rightExp) {
   }
 
   return {
+    isInfixExpression: () => {}, // empty function by design
     token,
     leftExp,
     operator,
     rightExp,
     string,
-    ...Expression(token)
-  }
+    ...Expression(token),
+  };
 }
 
 export function LetStatement(token, identifier, value) {
   function string() {
-    return `${token.literal} ${identifier.string()} = ${value === null ? "" : value.string()};`
+    return `${token.literal} ${identifier.string()} = ${value === null ? "" : value.string()};`;
   }
 
   return {
+    isLetStatement: () => {}, // empty function by design
     token,
     identifier,
     value,
     string,
-    ...Statement(token)
-  }
+    ...Statement(token),
+  };
 }
 
 export function ReturnStatement(token, value) {
   function string() {
-    return `${token.literal} ${value === null ? "" : value.string()};`
+    return `${token.literal} ${value === null ? "" : value.string()};`;
   }
 
   return {
+    isReturnStatement: () => {}, // empty function by design
     token,
     value,
     string,
-    ...Statement(token)
-  }
+    ...Statement(token),
+  };
 }
 
 export function ExpressionStatement(token, expression) {
   function string() {
-    return `${expression === null ? "" : expression.string()}`
+    return `${expression === null ? "" : expression.string()}`;
   }
 
   return {
+    isExpressionStatement: () => {}, // empty function by design
     token,
     expression,
     string,
-    ...Statement(token)
-  }
+    ...Statement(token),
+  };
 }
 
 export function Program(statements) {
   function tokenLiteral() {
     if (statements.length > 0) {
-      return statements[0].tokenLiteral()
+      return statements[0].tokenLiteral();
     } else {
-      return ""
+      return "";
     }
   }
 
   function string() {
-    return statements.map(statement => statement.string()).join("");
+    return statements.map((statement) => statement.string()).join("");
   }
 
   return {
     statements,
     tokenLiteral,
-    string
-  }
+    string,
+  };
 }
