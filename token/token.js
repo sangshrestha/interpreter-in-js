@@ -45,9 +45,5 @@ export function lookupIdent(ident) {
 }
 
 export function Token(type, literal) {
-  const newToken = Object.prototype.constructor.call(null);
-  newToken.type = type;
-  newToken.literal = literal;
-
-  return newToken;
+  return { type, literal };
 }
