@@ -1,7 +1,7 @@
 import { Lexer } from "./lexer";
 import * as token from "../token/token.js";
 
-xdescribe("Lexer.nextToken()", () => {
+describe("Lexer.nextToken()", () => {
   it("assigns token for delimiters", () => {
     const testString = ",;(){}";
     const testLexer = Lexer(testString);

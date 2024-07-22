@@ -1,6 +1,6 @@
 import { isLetter, isDigitString } from "./utility";
 
-xdescribe("isLetter()", () => {
+describe("isLetter()", () => {
   it("returns true for allowed chars", () => {
     const allowedChars = [
       "A",
@@ -87,7 +87,7 @@ xdescribe("isLetter()", () => {
   });
 });
 
-xdescribe("isDigitString()", () => {
+describe("isDigitString()", () => {
   it("returns true for string digits", () => {
     const allowedDigits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
     allowedDigits.forEach((digit) => {
