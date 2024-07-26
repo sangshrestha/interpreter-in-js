@@ -12,14 +12,12 @@ export function Node(token) {
 
 export function Statement(token) {
   return {
-    isStatement: () => {}, // empty function by design
     ...Node(token),
   };
 }
 
 export function Expression(token) {
   return {
-    isExpression: () => {}, // empty function by design
     ...Node(token),
   };
 }
@@ -30,7 +28,6 @@ export function Identifier(token, value) {
   }
 
   return {
-    isIdentifier: () => {}, // empty function by design
     token,
     value,
     string,
@@ -44,7 +41,6 @@ export function IntegerLiteral(token, value) {
   }
 
   return {
-    isIntegerLiteral: () => {}, // empty function by design
     token,
     value,
     string,
@@ -58,7 +54,6 @@ export function PrefixExpression(token, operator, rightExp) {
   }
 
   return {
-    isPrefixExpression: () => {}, // empty function by design
     token,
     operator,
     rightExp,
@@ -73,7 +68,6 @@ export function InfixExpression(token, leftExp, operator, rightExp) {
   }
 
   return {
-    isInfixExpression: () => {}, // empty function by design
     token,
     leftExp,
     operator,
@@ -89,7 +83,6 @@ export function LetStatement(token, identifier, value) {
   }
 
   return {
-    isLetStatement: () => {}, // empty function by design
     token,
     identifier,
     value,
@@ -104,7 +97,6 @@ export function ReturnStatement(token, value) {
   }
 
   return {
-    isReturnStatement: () => {}, // empty function by design
     token,
     value,
     string,
@@ -118,7 +110,6 @@ export function ExpressionStatement(token, expression) {
   }
 
   return {
-    isExpressionStatement: () => {}, // empty function by design
     token,
     expression,
     string,
