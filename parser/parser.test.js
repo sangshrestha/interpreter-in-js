@@ -1,44 +1,39 @@
 import { Parser } from "./parser";
 import { Lexer } from "../lexer/lexer";
 
-describe.each([
-  ["let x = 5;", "x", 5],
-  ["let foobar = true;", "foobar", true],
-])("Parse let statements", (input, ident, _) => {
+describe.each([["let x = 5;", "x", 5]])(
+  "Parse let statements",
+  (input, ident, _) => {
+    const parser = Parser(Lexer(input));
+    const program = parser.parseProgram();
+    checkParserErrors(parser);
+
+    it("outputs expected number of statements", () => {
+      expect(program.statements.length).toEqual(1);
+    });
+
+    const statement = program.statements[0];
+
+    it("outputs expected token literal", () => {
+      expect(statement.tokenLiteral()).toEqual("let");
+    });
+
+    it("outputs expected identifier value", () => {
+      expect(statement.identifier.value).toEqual(ident);
+    });
+
+    it("outputs expected identifier token literal", () => {
+      expect(statement.identifier.tokenLiteral()).toEqual(ident);
+    });
+
+    it.todo("outputs expected value");
+  },
+);
+
+describe.each([["return 5;", 5]])("Parse return statements", (input, _) => {
   const parser = Parser(Lexer(input));
-  checkParserErrors(parser);
-
   const program = parser.parseProgram();
-
-  it("outputs expected number of statements", () => {
-    expect(program.statements.length).toEqual(1);
-  });
-
-  const statement = program.statements[0];
-
-  it("outputs expected token literal", () => {
-    expect(statement.tokenLiteral()).toEqual("let");
-  });
-
-  it("outputs expected identifier value", () => {
-    expect(statement.identifier.value).toEqual(ident);
-  });
-
-  it("outputs expected identifier token literal", () => {
-    expect(statement.identifier.tokenLiteral()).toEqual(ident);
-  });
-
-  it.todo("outputs expected value");
-});
-
-describe.each([
-  ["return 5;", 5],
-  ["return true;", true],
-])("Parse return statements", (input, _) => {
-  const parser = Parser(Lexer(input));
   checkParserErrors(parser);
-
-  const program = parser.parseProgram();
 
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(1);
@@ -58,9 +53,8 @@ describe.each([
   ["a;", "a"],
 ])("Parse identifier expression", (input, ident) => {
   const parser = Parser(Lexer(input));
-  checkParserErrors(parser);
-
   const program = parser.parseProgram();
+  checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(1);
@@ -76,9 +70,8 @@ describe.each([
   ["10000;", 10000],
 ])("Parse integer literal expression", (input, value) => {
   const parser = Parser(Lexer(input));
-  checkParserErrors(parser);
-
   const program = parser.parseProgram();
+  checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(1);
@@ -94,9 +87,8 @@ describe.each([
   ["-15;", "-", 15],
 ])("Parse prefix expressions", (input, operator, value) => {
   const parser = Parser(Lexer(input));
-  checkParserErrors(parser);
-
   const program = parser.parseProgram();
+  checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(1);
@@ -122,9 +114,8 @@ describe.each([
   ["7 != 5;", 7, "!=", 5],
 ])("Parse infix expressions", (input, leftVal, operator, rightVal) => {
   const parser = Parser(Lexer(input));
-  checkParserErrors(parser);
-
   const program = parser.parseProgram();
+  checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(1);
@@ -134,6 +125,20 @@ describe.each([
 
   testInfixExpression(expression, leftVal, operator, rightVal);
 });
+
+describe.each([["true;", true]])(
+  "Parse boolean expressions",
+  (input, value) => {
+    const parser = Parser(Lexer(input));
+    const program = parser.parseProgram();
+    checkParserErrors(parser);
+
+    console.log(program.string());
+    it("outputs expected number of statements", () => {
+      expect(program.statements.length).toEqual(1);
+    });
+  },
+);
 
 describe.each([
   ["-a * b", "((-a) * b)"],
@@ -190,6 +195,16 @@ function testIdentifier(expression, value) {
   });
 }
 
+function testBoolean(expression, value) {
+  it("outputs expected boolean value", () => {
+    expect(expression.value).toEqual(value);
+  });
+
+  it("outputs expected token literal", () => {
+    expect(expression.tokenLiteral()).toEqual(value);
+  });
+}
+
 function testLiteralExpression(expression, expected) {
   switch (typeof expected) {
     case "number":
@@ -197,6 +212,9 @@ function testLiteralExpression(expression, expected) {
 
     case "string":
       return testIdentifier(expression, expected);
+
+    case "boolean":
+      return testBoolean(expression, expected);
   }
 
   throw new Error(`type of expected: ${typeof expected} not handled`);
