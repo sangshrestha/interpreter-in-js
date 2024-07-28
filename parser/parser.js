@@ -43,6 +43,7 @@ export function Parser(lexer) {
     [token.MINUS]: parsePrefixExpression,
     [token.TRUE]: parseBool,
     [token.FALSE]: parseBool,
+    [token.LPAREN]: parseGroupExpression,
   };
 
   const infixParseFns = {
@@ -198,6 +199,19 @@ export function Parser(lexer) {
     }
 
     return leftExp;
+  }
+
+  function parseGroupExpression() {
+    advanceToken();
+
+    const expression = parseExpression(LOWEST);
+
+    if (peekToken.type !== token.RPAREN) {
+      return null;
+    }
+
+    advanceToken();
+    return expression;
   }
 
   function parseExpressionStatement() {
