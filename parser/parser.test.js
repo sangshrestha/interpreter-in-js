@@ -1,36 +1,39 @@
 import { Parser } from "./parser";
 import { Lexer } from "../lexer/lexer";
 
-describe.each([["let x = 5;", "x", 5]])(
-  "Parse let statements",
-  (input, ident, _) => {
-    const parser = Parser(Lexer(input));
-    const program = parser.parseProgram();
-    checkParserErrors(parser);
+describe.each([
+  ["let x = 5;", "x", 5],
+  ["let foobar = true;", "foobar", true],
+])("Parse let statements", (input, ident, value) => {
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
 
-    it("outputs expected number of statements", () => {
-      expect(program.statements.length).toEqual(1);
-    });
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
 
-    const statement = program.statements[0];
+  const statement = program.statements[0];
 
-    it("outputs expected token literal", () => {
-      expect(statement.tokenLiteral()).toEqual("let");
-    });
+  it("outputs expected token literal", () => {
+    expect(statement.tokenLiteral()).toEqual("let");
+  });
 
-    it("outputs expected identifier value", () => {
-      expect(statement.identifier.value).toEqual(ident);
-    });
+  it("outputs expected identifier value", () => {
+    expect(statement.identifier.value).toEqual(ident);
+  });
 
-    it("outputs expected identifier token literal", () => {
-      expect(statement.identifier.tokenLiteral()).toEqual(ident);
-    });
+  it("outputs expected identifier token literal", () => {
+    expect(statement.identifier.tokenLiteral()).toEqual(ident);
+  });
 
-    it.todo("outputs expected value");
-  },
-);
+  testLiteralExpression(statement.expression, value);
+});
 
-describe.each([["return 5;", 5]])("Parse return statements", (input, _) => {
+describe.each([
+  ["return 5;", 5],
+  ["return false;", false],
+])("Parse return statements", (input, value) => {
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
@@ -45,7 +48,7 @@ describe.each([["return 5;", 5]])("Parse return statements", (input, _) => {
     expect(statement.tokenLiteral()).toEqual("return");
   });
 
-  it.todo("outputs expected value");
+  testLiteralExpression(statement.expression, value);
 });
 
 describe.each([
@@ -61,7 +64,6 @@ describe.each([
   });
 
   const { expression } = program.statements[0];
-
   testIdentifier(expression, ident);
 });
 
@@ -78,13 +80,14 @@ describe.each([
   });
 
   const { expression } = program.statements[0];
-
   testIntegerLiteral(expression, value);
 });
 
 describe.each([
   ["!foobar;", "!", "foobar"],
   ["-15;", "-", 15],
+  ["!true;", "!", true],
+  ["!false;", "!", false],
 ])("Parse prefix expressions", (input, operator, value) => {
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
@@ -112,6 +115,9 @@ describe.each([
   ["7 < 5;", 7, "<", 5],
   ["7 == 5;", 7, "==", 5],
   ["7 != 5;", 7, "!=", 5],
+  ["true == true", true, "==", true],
+  ["true != false", true, "!=", false],
+  ["false == false", false, "==", false],
 ])("Parse infix expressions", (input, leftVal, operator, rightVal) => {
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
@@ -122,7 +128,6 @@ describe.each([
   });
 
   const { expression } = program.statements[0];
-
   testInfixExpression(expression, leftVal, operator, rightVal);
 });
 
@@ -133,10 +138,12 @@ describe.each([["true;", true]])(
     const program = parser.parseProgram();
     checkParserErrors(parser);
 
-    console.log(program.string());
     it("outputs expected number of statements", () => {
       expect(program.statements.length).toEqual(1);
     });
+
+    const { expression } = program.statements[0];
+    testLiteralExpression(expression, value);
   },
 );
 
@@ -154,6 +161,10 @@ describe.each([
   ["5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"],
   ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"],
   ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"],
+  ["true", "true"],
+  ["false", "false"],
+  ["3 > 5 == false", "((3 > 5) == false)"],
+  ["3 < 5 == true", "((3 < 5) == true)"],
 ])("Operator precedence", (input, expected) => {
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
@@ -201,7 +212,7 @@ function testBoolean(expression, value) {
   });
 
   it("outputs expected token literal", () => {
-    expect(expression.tokenLiteral()).toEqual(value);
+    expect(expression.tokenLiteral()).toEqual(value.toString());
   });
 }
 

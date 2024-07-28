@@ -1,4 +1,5 @@
 import {
+  Bool,
   ExpressionStatement,
   Identifier,
   InfixExpression,
@@ -40,6 +41,8 @@ export function Parser(lexer) {
     [token.INT]: parseIntegerLiteral,
     [token.BANG]: parsePrefixExpression,
     [token.MINUS]: parsePrefixExpression,
+    [token.TRUE]: parseBool,
+    [token.FALSE]: parseBool,
   };
 
   const infixParseFns = {
@@ -142,13 +145,13 @@ export function Parser(lexer) {
 
     advanceToken();
 
-    const letValue = parseExpression(LOWEST);
+    const letExpression = parseExpression(LOWEST);
 
     if (peekToken.type === token.SEMICOLON) {
       advanceToken();
     }
 
-    return LetStatement(letToken, letIdentifier, letValue);
+    return LetStatement(letToken, letIdentifier, letExpression);
   }
 
   function parseReturnStatement() {
@@ -156,13 +159,17 @@ export function Parser(lexer) {
 
     advanceToken();
 
-    const returnValue = parseExpression(LOWEST);
+    const returnExpression = parseExpression(LOWEST);
 
     if (peekToken.type === token.SEMICOLON) {
       advanceToken();
     }
 
-    return ReturnStatement(returnToken, returnValue);
+    return ReturnStatement(returnToken, returnExpression);
+  }
+
+  function parseBool() {
+    return Bool(currentToken, currentToken.type === token.TRUE);
   }
 
   function parseExpression(precedence) {

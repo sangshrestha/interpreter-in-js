@@ -77,28 +77,28 @@ export function InfixExpression(token, leftExp, operator, rightExp) {
   };
 }
 
-export function LetStatement(token, identifier, value) {
+export function LetStatement(token, identifier, expression) {
   function string() {
-    return `${token.literal} ${identifier.string()} = ${value === null ? "" : value.string()};`;
+    return `${token.literal} ${identifier.string()} = ${expression === null ? "" : expression.string()};`;
   }
 
   return {
     token,
     identifier,
-    value,
+    expression,
     string,
     ...Statement(token),
   };
 }
 
-export function ReturnStatement(token, value) {
+export function ReturnStatement(token, expression) {
   function string() {
-    return `${token.literal} ${value === null ? "" : value.string()};`;
+    return `${token.literal} ${expression === null ? "" : expression.string()};`;
   }
 
   return {
     token,
-    value,
+    expression,
     string,
     ...Statement(token),
   };
@@ -114,6 +114,20 @@ export function ExpressionStatement(token, expression) {
     expression,
     string,
     ...Statement(token),
+  };
+}
+
+// Bool instead of Boolean not confuse with the built-in Boolean constructor
+export function Bool(token, value) {
+  function string() {
+    return token.literal;
+  }
+
+  return {
+    token,
+    value,
+    string,
+    ...Expression(token),
   };
 }
 
