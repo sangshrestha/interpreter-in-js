@@ -117,7 +117,7 @@ export function ExpressionStatement(token, expression) {
   };
 }
 
-// Bool instead of Boolean not confuse with the built-in Boolean constructor
+// Bool instead of Boolean to not confuse with the built-in Boolean constructor
 export function Bool(token, value) {
   function string() {
     return token.literal;
@@ -128,6 +128,46 @@ export function Bool(token, value) {
     value,
     string,
     ...Expression(token),
+  };
+}
+
+export function IfExpression(token, condition, consequence, alternative) {
+  function string() {
+    let ifExpressionString = `if${condition.string()} ${consequence.string()}`;
+
+    if (alternative !== null) {
+      ifExpressionString += `else ${alternative.string()}`;
+    }
+
+    return ifExpressionString;
+  }
+
+  return {
+    token,
+    condition,
+    consequence,
+    alternative,
+    string,
+    ...Expression(token),
+  };
+}
+
+export function BlockStatement(token, statements) {
+  function string() {
+    let blockString;
+
+    for (const statement of statements) {
+      blockString += statement.string();
+    }
+
+    return blockString;
+  }
+
+  return {
+    token,
+    statements,
+    string,
+    ...Statement(token),
   };
 }
 

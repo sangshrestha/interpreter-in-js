@@ -180,6 +180,27 @@ describe.each([
   });
 });
 
+describe("Parse if expression", () => {
+  const input = "if (x < y) { x }";
+
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+
+  testInfixExpression(expression.condition, "x", "<", "y");
+
+  it("outputs expected number of consequences", () => {
+    expect(expression.consequence.statements.length).toEqual(1);
+  });
+
+  testIdentifier(expression.consequence.statements[0].expression, "x");
+});
+
 // Helper functions
 function checkParserErrors(parser) {
   const errors = parser.getErrors();

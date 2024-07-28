@@ -1,7 +1,9 @@
 import {
+  BlockStatement,
   Bool,
   ExpressionStatement,
   Identifier,
+  IfExpression,
   InfixExpression,
   IntegerLiteral,
   LetStatement,
@@ -44,6 +46,7 @@ export function Parser(lexer) {
     [token.TRUE]: parseBool,
     [token.FALSE]: parseBool,
     [token.LPAREN]: parseGroupExpression,
+    [token.IF]: parseIfExpression,
   };
 
   const infixParseFns = {
@@ -173,6 +176,55 @@ export function Parser(lexer) {
     return Bool(currentToken, currentToken.type === token.TRUE);
   }
 
+  function parseBlockStatement() {
+    const startToken = currentToken;
+    const statements = [];
+
+    advanceToken();
+
+    while (
+      currentToken.type !== token.RBRACE &&
+      currentToken.type !== token.EOF
+    ) {
+      const statement = parseStatement();
+
+      if (statement !== null) {
+        statements.push(statement);
+      }
+      advanceToken();
+    }
+
+    return BlockStatement(startToken, statements);
+  }
+
+  function parseIfExpression() {
+    const startToken = currentToken;
+
+    if (peekToken.type !== token.LPAREN) {
+      return null;
+    }
+
+    advanceToken(); // Advance to LPAREN
+    advanceToken();
+
+    const condition = parseExpression(LOWEST);
+
+    if (peekToken.type !== token.RPAREN) {
+      return null;
+    }
+
+    advanceToken();
+
+    if (peekToken.type !== token.LBRACE) {
+      return null;
+    }
+
+    advanceToken();
+    const consequence = parseBlockStatement();
+
+    return IfExpression(startToken, condition, consequence);
+  }
+
   function parseExpression(precedence) {
     const prefixFn = prefixParseFns[currentToken.type];
 
@@ -222,7 +274,7 @@ export function Parser(lexer) {
       advanceToken();
     }
 
-    return ExpressionStatement(currentToken, expression);
+    return ExpressionStatement(startToken, expression);
   }
 
   function parseStatement() {
