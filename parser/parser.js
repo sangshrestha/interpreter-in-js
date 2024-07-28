@@ -215,6 +215,7 @@ export function Parser(lexer) {
   }
 
   function parseExpressionStatement() {
+    const startToken = currentToken;
     const expression = parseExpression(LOWEST);
 
     if (peekToken.type === token.SEMICOLON) {
