@@ -210,12 +210,4 @@ function testInfixExpression(expression, leftVal, operator, rightVal) {
   });
 
   testLiteralExpression(expression.rightExp, rightVal);
-
-  it("outputs correct value", () => {
-    expect(expression.rightExp.value).toEqual(value);
-  });
-
-  it("outputs correct token literal", () => {
-    expect(expression.rightExp.tokenLiteral()).toEqual(value.toString());
-  });
 }
