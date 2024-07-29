@@ -244,6 +244,14 @@ describe("Parse function literal", () => {
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(1);
   });
+
+  const { expression } = program.statements[0];
+
+  it("outputs expected number of parameters", () => {
+    expect(expression.parameters.length).toEqual(2);
+  });
+
+  testInfixExpression(expression.body, "a", "+", "b");
 });
 
 describe.each([
