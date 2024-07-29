@@ -154,7 +154,7 @@ export function IfExpression(token, condition, consequence, alternative) {
 
 export function BlockStatement(token, statements) {
   function string() {
-    let blockString;
+    let blockString = "";
 
     for (const statement of statements) {
       blockString += statement.string();
