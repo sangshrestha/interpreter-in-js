@@ -1,5 +1,6 @@
 import readline from "node:readline/promises";
 import { Lexer } from "./lexer/lexer.js";
+import { Parser } from "./parser/parser.js";
 
 while (true) {
   const rl = readline.createInterface({
@@ -9,11 +10,16 @@ while (true) {
 
   const code = await rl.question(">> ");
 
-  const inputLexer = Lexer(code);
+  const inputParser = Parser(Lexer(code));
+  const inputProgram = inputParser.parseProgram();
 
-  while (inputLexer.getChar() !== 0) {
-    console.log(inputLexer.nextToken());
+  const parserErrors = inputParser.getErrors();
+
+  if (parserErrors.length > 0) {
+    console.error(parserErrors);
   }
+
+  console.log(inputProgram.string());
 
   rl.close();
 }
