@@ -171,6 +171,20 @@ export function BlockStatement(token, statements) {
   };
 }
 
+export function FunctionLiteral(token, parameters, body) {
+  function string() {
+    return `${token.literal}(${parameters.map((param) => param.string()).join(", ")}) ${body.string()}`;
+  }
+
+  return {
+    token,
+    parameters,
+    body,
+    string,
+    ...Expression(token),
+  };
+}
+
 export function Program(statements) {
   function tokenLiteral() {
     if (statements.length > 0) {

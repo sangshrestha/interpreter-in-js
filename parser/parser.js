@@ -2,6 +2,7 @@ import {
   BlockStatement,
   Bool,
   ExpressionStatement,
+  FunctionLiteral,
   Identifier,
   IfExpression,
   InfixExpression,
@@ -47,6 +48,7 @@ export function Parser(lexer) {
     [token.FALSE]: parseBool,
     [token.LPAREN]: parseGroupExpression,
     [token.IF]: parseIfExpression,
+    [token.FUNCTION]: parseFunctionLiteral,
   };
 
   const infixParseFns = {
@@ -236,6 +238,55 @@ export function Parser(lexer) {
     }
 
     return IfExpression(startToken, condition, consequence, alternative);
+  }
+
+  function parseFunctionLiteral() {
+    const startToken = currentToken;
+
+    if (peekToken.type !== token.LPAREN) {
+      return null;
+    }
+
+    advanceToken();
+
+    const parameters = parseFunctionParameters();
+
+    if (peekToken.type !== token.LBRACE) {
+      return null;
+    }
+
+    advanceToken();
+
+    const body = parseBlockStatement();
+
+    return FunctionLiteral(startToken, parameters, body);
+  }
+
+  function parseFunctionParameters() {
+    let identifiers = [];
+
+    if (peekToken.type === token.RPAREN) {
+      advanceToken();
+      return identifiers;
+    }
+
+    advanceToken();
+
+    identifiers.push(Identifier(currentToken, currentToken.literal));
+
+    while (peekToken.type === token.COMMA) {
+      advanceToken();
+      advanceToken();
+      identifiers.push(Identifier(currentToken, currentToken.literal));
+    }
+
+    if (peekToken.type !== token.RPAREN) {
+      return null;
+    }
+
+    advanceToken();
+
+    return identifiers;
   }
 
   function parseExpression(precedence) {

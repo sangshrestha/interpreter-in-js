@@ -234,6 +234,38 @@ describe("Parse if else expression", () => {
   testIdentifier(expression.alternative.statements[0].expression, "y");
 });
 
+describe("Parse function literal", () => {
+  const input = "fn(a, b) { a + b; }";
+
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+});
+
+describe.each([
+  ["fn() {};", []],
+  ["fn(tu) {};", ["tu"]],
+  ["fn(s, a, n, g) {}", ["s", "a", "n", "g"]],
+])("Parse function parameters", (input, expected) => {
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  const { parameters } = program.statements[0].expression;
+
+  it("outputs expected number of parameters", () => {
+    expect(parameters.length).toEqual(expected.length);
+  });
+
+  expected.forEach((identifier, index) => {
+    testLiteralExpression(parameters[index], identifier);
+  });
+});
+
 // Helper functions
 function checkParserErrors(parser) {
   const errors = parser.getErrors();
