@@ -1,6 +1,7 @@
 import {
   BlockStatement,
   Bool,
+  CallExpression,
   ExpressionStatement,
   FunctionLiteral,
   Identifier,
@@ -31,6 +32,7 @@ const precedences = {
   [token.MINUS]: SUM,
   [token.SLASH]: PRODUCT,
   [token.ASTERISK]: PRODUCT,
+  [token.LPAREN]: CALL,
 };
 
 export function Parser(lexer) {
@@ -60,6 +62,7 @@ export function Parser(lexer) {
     [token.NOT_EQ]: parseInfixExpression,
     [token.LT]: parseInfixExpression,
     [token.GT]: parseInfixExpression,
+    [token.LPAREN]: parseCallExpression,
   };
 
   function getCurrentToken() {
@@ -287,6 +290,40 @@ export function Parser(lexer) {
     advanceToken();
 
     return identifiers;
+  }
+
+  function parseCallExpression(functionExpression) {
+    const startToken = currentToken;
+    const args = parseCallArguments();
+
+    return CallExpression(startToken, functionExpression, args);
+  }
+
+  function parseCallArguments() {
+    let args = [];
+
+    if (peekToken.type === token.RPAREN) {
+      advanceToken();
+      return args;
+    }
+
+    advanceToken();
+
+    args.push(parseExpression(LOWEST));
+
+    while (peekToken.type === token.COMMA) {
+      advanceToken();
+      advanceToken();
+      args.push(parseExpression(LOWEST));
+    }
+
+    if (peekToken.type !== token.RPAREN) {
+      return null;
+    }
+
+    advanceToken();
+
+    return args;
   }
 
   function parseExpression(precedence) {

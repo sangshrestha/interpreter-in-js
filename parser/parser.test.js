@@ -274,6 +274,30 @@ describe.each([
   });
 });
 
+describe("Parse call expression", () => {
+  const input = "add(1, 2 * 3, 5 + 7);";
+
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+
+  testIdentifier(expression.functionExpression, "add");
+
+  it("outputs expected number of arguments", () => {
+    expect(expression.args.length).toEqual(3);
+  });
+
+  testLiteralExpression(expression.args[0], 1);
+  testInfixExpression(expression.args[1], 2, "*", 3);
+  testInfixExpression(expression.args[2], 5, "+", 7);
+});
+
 // Helper functions
 function checkParserErrors(parser) {
   const errors = parser.getErrors();

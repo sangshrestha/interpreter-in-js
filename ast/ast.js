@@ -185,6 +185,20 @@ export function FunctionLiteral(token, parameters, body) {
   };
 }
 
+export function CallExpression(token, functionExpression, args) {
+  function string() {
+    return `${functionExpression.string()}(${args.map((arg) => arg.string()).join(", ")})`;
+  }
+
+  return {
+    token,
+    functionExpression,
+    args,
+    string,
+    ...Expression(token),
+  };
+}
+
 export function Program(statements) {
   function tokenLiteral() {
     if (statements.length > 0) {
