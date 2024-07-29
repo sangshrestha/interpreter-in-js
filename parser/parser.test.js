@@ -181,7 +181,7 @@ describe.each([
 });
 
 describe("Parse if expression", () => {
-  const input = "if (x < y) { x }";
+  const input = "if (x < y) { x; }";
 
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
@@ -200,10 +200,14 @@ describe("Parse if expression", () => {
   });
 
   testIdentifier(expression.consequence.statements[0].expression, "x");
+
+  it("outputs null alternative", () => {
+    expect(expression.alternative).toEqual(null);
+  });
 });
 
 describe("Parse if else expression", () => {
-  const input = "if (x > y) { x } else { y }";
+  const input = "if (x > y) { x; } else { y; }";
 
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
@@ -222,6 +226,12 @@ describe("Parse if else expression", () => {
   });
 
   testIdentifier(expression.consequence.statements[0].expression, "x");
+
+  it("outputs expected number of alternatives", () => {
+    expect(expression.alternative.statements.length).toEqual(1);
+  });
+
+  testIdentifier(expression.alternative.statements[0].expression, "y");
 });
 
 // Helper functions
