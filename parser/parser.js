@@ -222,7 +222,20 @@ export function Parser(lexer) {
     advanceToken();
     const consequence = parseBlockStatement();
 
-    return IfExpression(startToken, condition, consequence);
+    let alternative = null;
+
+    if (peekToken.type === token.ELSE) {
+      advanceToken();
+
+      if (peekToken.type !== token.LBRACE) {
+        return null;
+      }
+
+      advanceToken();
+      alternative = parseBlockStatement();
+    }
+
+    return IfExpression(startToken, condition, consequence, alternative);
   }
 
   function parseExpression(precedence) {

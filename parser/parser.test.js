@@ -185,6 +185,7 @@ describe("Parse if expression", () => {
 
   const parser = Parser(Lexer(input));
   const program = parser.parseProgram();
+  checkParserErrors(parser);
 
   it("outputs expected number of statements", () => {
     expect(program.statements.length).toEqual(1);
@@ -193,6 +194,28 @@ describe("Parse if expression", () => {
   const { expression } = program.statements[0];
 
   testInfixExpression(expression.condition, "x", "<", "y");
+
+  it("outputs expected number of consequences", () => {
+    expect(expression.consequence.statements.length).toEqual(1);
+  });
+
+  testIdentifier(expression.consequence.statements[0].expression, "x");
+});
+
+describe("Parse if else expression", () => {
+  const input = "if (x > y) { x } else { y }";
+
+  const parser = Parser(Lexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+
+  testInfixExpression(expression.condition, "x", ">", "y");
 
   it("outputs expected number of consequences", () => {
     expect(expression.consequence.statements.length).toEqual(1);
