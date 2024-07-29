@@ -251,7 +251,7 @@ describe("Parse function literal", () => {
     expect(expression.parameters.length).toEqual(2);
   });
 
-  testInfixExpression(expression.body, "a", "+", "b");
+  testInfixExpression(expression.body.statements[0].expression, "a", "+", "b");
 });
 
 describe.each([
