@@ -105,7 +105,7 @@ export function Parser(lexer) {
   }
 
   function parseIdentifier() {
-    return Identifier(currentToken, currentToken.literal);
+    return new Identifier(currentToken, currentToken.literal);
   }
 
   function parseIntegerLiteral() {
@@ -116,7 +116,7 @@ export function Parser(lexer) {
       return null;
     }
 
-    return IntegerLiteral(currentToken, value);
+    return new IntegerLiteral(currentToken, value);
   }
 
   function parsePrefixExpression() {
@@ -126,7 +126,7 @@ export function Parser(lexer) {
     advanceToken();
 
     const rightExp = parseExpression(PREFIX);
-    return PrefixExpression(startToken, operator, rightExp);
+    return new PrefixExpression(startToken, operator, rightExp);
   }
 
   function parseInfixExpression(leftExp) {
@@ -136,7 +136,7 @@ export function Parser(lexer) {
     advanceToken();
 
     const rightExp = parseExpression(precedence);
-    return InfixExpression(token, leftExp, token.literal, rightExp);
+    return new InfixExpression(token, leftExp, token.literal, rightExp);
   }
 
   function parseLetStatement() {
@@ -146,7 +146,7 @@ export function Parser(lexer) {
       return null;
     }
 
-    const letIdentifier = Identifier(currentToken, currentToken.literal);
+    const letIdentifier = new Identifier(currentToken, currentToken.literal);
 
     if (!expectPeek(token.ASSIGN)) {
       return null;
@@ -160,7 +160,7 @@ export function Parser(lexer) {
       advanceToken();
     }
 
-    return LetStatement(letToken, letIdentifier, letExpression);
+    return new LetStatement(letToken, letIdentifier, letExpression);
   }
 
   function parseReturnStatement() {
@@ -174,11 +174,11 @@ export function Parser(lexer) {
       advanceToken();
     }
 
-    return ReturnStatement(returnToken, returnExpression);
+    return new ReturnStatement(returnToken, returnExpression);
   }
 
   function parseBool() {
-    return Bool(currentToken, currentToken.type === token.TRUE);
+    return new Bool(currentToken, currentToken.type === token.TRUE);
   }
 
   function parseBlockStatement() {
@@ -199,7 +199,7 @@ export function Parser(lexer) {
       advanceToken();
     }
 
-    return BlockStatement(startToken, statements);
+    return new BlockStatement(startToken, statements);
   }
 
   function parseIfExpression() {
@@ -240,7 +240,7 @@ export function Parser(lexer) {
       alternative = parseBlockStatement();
     }
 
-    return IfExpression(startToken, condition, consequence, alternative);
+    return new IfExpression(startToken, condition, consequence, alternative);
   }
 
   function parseFunctionLiteral() {
@@ -262,7 +262,7 @@ export function Parser(lexer) {
 
     const body = parseBlockStatement();
 
-    return FunctionLiteral(startToken, parameters, body);
+    return new FunctionLiteral(startToken, parameters, body);
   }
 
   function parseFunctionParameters() {
@@ -275,12 +275,12 @@ export function Parser(lexer) {
 
     advanceToken();
 
-    identifiers.push(Identifier(currentToken, currentToken.literal));
+    identifiers.push(new Identifier(currentToken, currentToken.literal));
 
     while (peekToken.type === token.COMMA) {
       advanceToken();
       advanceToken();
-      identifiers.push(Identifier(currentToken, currentToken.literal));
+      identifiers.push(new Identifier(currentToken, currentToken.literal));
     }
 
     if (peekToken.type !== token.RPAREN) {
@@ -296,7 +296,7 @@ export function Parser(lexer) {
     const startToken = currentToken;
     const args = parseCallArguments();
 
-    return CallExpression(startToken, functionExpression, args);
+    return new CallExpression(startToken, functionExpression, args);
   }
 
   function parseCallArguments() {
@@ -375,7 +375,7 @@ export function Parser(lexer) {
       advanceToken();
     }
 
-    return ExpressionStatement(startToken, expression);
+    return new ExpressionStatement(startToken, expression);
   }
 
   function parseStatement() {

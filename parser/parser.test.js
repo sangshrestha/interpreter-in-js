@@ -103,7 +103,7 @@ describe.each([
     expect(expression.operator).toEqual(operator);
   });
 
-  testLiteralExpression(expression.rightExp, value);
+  testLiteralExpression(expression.rightExpression, value);
 });
 
 describe.each([
@@ -355,11 +355,11 @@ function testLiteralExpression(expression, expected) {
 }
 
 function testInfixExpression(expression, leftVal, operator, rightVal) {
-  testLiteralExpression(expression.leftExp, leftVal);
+  testLiteralExpression(expression.leftExpression, leftVal);
 
   it("outputs correct operator", () => {
     expect(expression.operator).toEqual(operator);
   });
 
-  testLiteralExpression(expression.rightExp, rightVal);
+  testLiteralExpression(expression.rightExpression, rightVal);
 }

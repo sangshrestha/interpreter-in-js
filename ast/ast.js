@@ -1,202 +1,185 @@
 // Abstract Syntax Tree
 
-export function Node(token) {
-  function tokenLiteral() {
-    return token.literal;
+export class Node {
+  constructor(token) {
+    this.token = token;
   }
 
-  return {
-    tokenLiteral,
-  };
+  tokenLiteral() {
+    return this.token.literal;
+  }
 }
 
-export function Statement(token) {
-  return {
-    ...Node(token),
-  };
-}
+export class Statement extends Node {}
+export class Expression extends Node {}
 
-export function Expression(token) {
-  return {
-    ...Node(token),
-  };
-}
-
-export function Identifier(token, value) {
-  function string() {
-    return value;
+export class Identifier extends Expression {
+  constructor(token, value) {
+    super();
+    this.token = token;
+    this.value = value;
   }
 
-  return {
-    token,
-    value,
-    string,
-    ...Expression(token),
-  };
+  string() {
+    return this.value;
+  }
 }
 
-export function IntegerLiteral(token, value) {
-  function string() {
-    return token.literal;
+export class IntegerLiteral extends Expression {
+  constructor(token, value) {
+    super();
+    this.token = token;
+    this.value = value;
   }
 
-  return {
-    token,
-    value,
-    string,
-    ...Expression(token),
-  };
+  string() {
+    return this.token.literal;
+  }
 }
 
-export function PrefixExpression(token, operator, rightExp) {
-  function string() {
-    return `(${operator}${rightExp.string()})`;
+export class LetStatement extends Statement {
+  constructor(token, identifier, expression) {
+    super();
+    this.token = token;
+    this.identifier = identifier;
+    this.expression = expression;
   }
 
-  return {
-    token,
-    operator,
-    rightExp,
-    string,
-    ...Expression(token),
-  };
+  string() {
+    return `${this.token.literal} ${this.identifier.string()} = ${this.expression ? this.expression.string() : ""};`;
+  }
 }
 
-export function InfixExpression(token, leftExp, operator, rightExp) {
-  function string() {
-    return `(${leftExp.string()} ${operator} ${rightExp.string()})`;
+export class ReturnStatement extends Statement {
+  constructor(token, expression) {
+    super();
+    this.token = token;
+    this.expression = expression;
   }
 
-  return {
-    token,
-    leftExp,
-    operator,
-    rightExp,
-    string,
-    ...Expression(token),
-  };
+  string() {
+    return `${this.token.literal} ${this.expression ? this.expression.string() : ""};`;
+  }
 }
 
-export function LetStatement(token, identifier, expression) {
-  function string() {
-    return `${token.literal} ${identifier.string()} = ${expression === null ? "" : expression.string()};`;
+export class ExpressionStatement extends Statement {
+  constructor(token, expression) {
+    super();
+    this.token = token;
+    this.expression = expression;
   }
 
-  return {
-    token,
-    identifier,
-    expression,
-    string,
-    ...Statement(token),
-  };
+  string() {
+    return `${this.expression ? this.expression.string() : ""}`;
+  }
 }
 
-export function ReturnStatement(token, expression) {
-  function string() {
-    return `${token.literal} ${expression === null ? "" : expression.string()};`;
+export class PrefixExpression extends Expression {
+  constructor(token, operator, rightExpression) {
+    super();
+    this.token = token;
+    this.operator = operator;
+    this.rightExpression = rightExpression;
   }
 
-  return {
-    token,
-    expression,
-    string,
-    ...Statement(token),
-  };
+  string() {
+    return `(${this.operator}${this.rightExpression.string()})`;
+  }
 }
 
-export function ExpressionStatement(token, expression) {
-  function string() {
-    return `${expression === null ? "" : expression.string()}`;
+export class InfixExpression extends Expression {
+  constructor(token, leftExpression, operator, rightExpression) {
+    super();
+    this.token = token;
+    this.leftExpression = leftExpression;
+    this.operator = operator;
+    this.rightExpression = rightExpression;
   }
 
-  return {
-    token,
-    expression,
-    string,
-    ...Statement(token),
-  };
+  string() {
+    return `(${this.leftExpression.string()} ${this.operator} ${this.rightExpression.string()})`;
+  }
 }
 
 // Bool instead of Boolean to not confuse with the built-in Boolean constructor
-export function Bool(token, value) {
-  function string() {
-    return token.literal;
+export class Bool extends Expression {
+  constructor(token, value) {
+    super();
+    this.token = token;
+    this.value = value;
   }
 
-  return {
-    token,
-    value,
-    string,
-    ...Expression(token),
-  };
+  string() {
+    return this.token.literal;
+  }
 }
 
-export function IfExpression(token, condition, consequence, alternative) {
-  function string() {
-    let ifExpressionString = `if${condition.string()} ${consequence.string()}`;
+export class IfExpression extends Expression {
+  constructor(token, condition, consequence, alternative) {
+    super();
+    this.token = token;
+    this.condition = condition;
+    this.consequence = consequence;
+    this.alternative = alternative;
+  }
 
-    if (alternative !== null) {
-      ifExpressionString += `else ${alternative.string()}`;
+  string() {
+    let str = `if${this.condition.string()} ${this.consequence.string()}`;
+
+    if (this.alternative) {
+      str += `else ${this.alternative.string()}`;
     }
 
-    return ifExpressionString;
+    return str;
   }
-
-  return {
-    token,
-    condition,
-    consequence,
-    alternative,
-    string,
-    ...Expression(token),
-  };
 }
 
-export function BlockStatement(token, statements) {
-  function string() {
-    let blockString = "";
+export class BlockStatement extends Statement {
+  constructor(token, statements) {
+    super();
+    this.token = token;
+    this.statements = statements;
+  }
 
-    for (const statement of statements) {
-      blockString += statement.string();
+  string() {
+    let str = "";
+
+    for (const statement of this.statements) {
+      str += statement.string();
     }
 
-    return blockString;
+    return str;
   }
-
-  return {
-    token,
-    statements,
-    string,
-    ...Statement(token),
-  };
 }
 
-export function FunctionLiteral(token, parameters, body) {
-  function string() {
-    return `${token.literal}(${parameters.map((param) => param.string()).join(", ")}) ${body.string()}`;
+export class FunctionLiteral extends Expression {
+  constructor(token, parameters, body) {
+    super();
+    this.token = token;
+    this.parameters = parameters;
+    this.body = body;
   }
 
-  return {
-    token,
-    parameters,
-    body,
-    string,
-    ...Expression(token),
-  };
+  string() {
+    let paramStr = this.parameters.map((param) => param.string()).join(", ");
+
+    return `${this.token.literal}(${paramStr}) ${this.body.string()}`;
+  }
 }
 
-export function CallExpression(token, functionExpression, args) {
-  function string() {
-    return `${functionExpression.string()}(${args.map((arg) => arg.string()).join(", ")})`;
+export class CallExpression extends Expression {
+  constructor(token, functionExpression, args) {
+    super();
+    this.token = token;
+    this.functionExpression = functionExpression;
+    this.args = args;
   }
 
-  return {
-    token,
-    functionExpression,
-    args,
-    string,
-    ...Expression(token),
-  };
+  string() {
+    let argsStr = this.args.map((arg) => arg.string()).join(", ");
+
+    return `${this.functionExpression.string()}(${argsStr})`;
+  }
 }
 
 export function Program(statements) {
