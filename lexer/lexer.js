@@ -144,7 +144,6 @@ export function Lexer(input) {
   }
 
   return {
-    getChar,
     nextToken,
   };
 }
