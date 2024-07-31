@@ -1,7 +1,7 @@
 import * as token from "../token/token.js";
 import { isDigitString, isLetter } from "../utility.js";
 
-export function Lexer(input) {
+export function createLexer(input) {
   let index = 0;
   let peekIndex = 1;
 

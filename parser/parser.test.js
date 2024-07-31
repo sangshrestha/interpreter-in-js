@@ -1,5 +1,5 @@
-import { Parser } from "./parser";
-import { Lexer } from "../lexer/lexer";
+import { createParser } from "./parser";
+import { createLexer } from "../lexer/lexer";
 import {
   Bool,
   CallExpression,
@@ -17,7 +17,7 @@ describe.each([
   ["let x = 5;", "x", 5],
   ["let foobar = true;", "foobar", true],
 ])("Parse let statements", (input, ident, value) => {
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -50,7 +50,7 @@ describe.each([
   ["return 5;", 5],
   ["return false;", false],
 ])("Parse return statements", (input, value) => {
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -75,7 +75,7 @@ describe.each([
   ["foobar;", "foobar"],
   ["a;", "a"],
 ])("Parse identifier expression", (input, ident) => {
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -92,7 +92,7 @@ describe.each([
   ["5;", 5],
   ["10000;", 10000],
 ])("Parse integer literal expression", (input, value) => {
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -110,7 +110,7 @@ describe.each([
   ["!true;", "!", true],
   ["!false;", "!", false],
 ])("Parse prefix expressions", (input, operator, value) => {
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -144,7 +144,7 @@ describe.each([
   ["true != false", true, "!=", false],
   ["false == false", false, "==", false],
 ])("Parse infix expressions", (input, leftVal, operator, rightVal) => {
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -159,7 +159,7 @@ describe.each([
 describe.each([["true;", true]])(
   "Parse boolean expressions",
   (input, value) => {
-    const parser = Parser(Lexer(input));
+    const parser = createParser(createLexer(input));
     const program = parser.parseProgram();
     checkParserErrors(parser);
 
@@ -196,7 +196,7 @@ describe.each([
   ["-(5 + 5)", "(-(5 + 5))"],
   ["!(true == true)", "(!(true == true))"],
 ])("Operator precedence", (input, expected) => {
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -208,7 +208,7 @@ describe.each([
 describe("Parse if expression", () => {
   const input = "if (x < y) { x; }";
 
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -238,7 +238,7 @@ describe("Parse if expression", () => {
 describe("Parse if else expression", () => {
   const input = "if (x > y) { x; } else { y; }";
 
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -266,7 +266,7 @@ describe("Parse if else expression", () => {
 describe("Parse function literal", () => {
   const input = "fn(a, b) { a + b; }";
 
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -292,7 +292,7 @@ describe.each([
   ["fn(tu) {};", ["tu"]],
   ["fn(s, a, n, g) {}", ["s", "a", "n", "g"]],
 ])("Parse function parameters", (input, expected) => {
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 
@@ -310,7 +310,7 @@ describe.each([
 describe("Parse call expression", () => {
   const input = "add(1, 2 * 3, 5 + 7);";
 
-  const parser = Parser(Lexer(input));
+  const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
 

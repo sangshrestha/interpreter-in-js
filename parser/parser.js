@@ -35,7 +35,7 @@ const precedences = {
   [token.LPAREN]: CALL,
 };
 
-export function Parser(lexer) {
+export function createParser(lexer) {
   let currentToken = lexer.nextToken();
   let peekToken = lexer.nextToken();
 

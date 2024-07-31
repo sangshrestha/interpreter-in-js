@@ -1,10 +1,10 @@
-import { Lexer } from "./lexer";
+import { createLexer } from "./lexer";
 import * as token from "../token/token.js";
 
 describe("Lexer.nextToken()", () => {
   it("assigns token for delimiters", () => {
     const testString = ",;(){}";
-    const testLexer = Lexer(testString);
+    const testLexer = createLexer(testString);
 
     const expectedTokens = [
       { type: token.COMMA, literal: "," },
@@ -23,7 +23,7 @@ describe("Lexer.nextToken()", () => {
 
   it("assigns token for single char operators", () => {
     const testString = "=+-!*/<>";
-    const testLexer = Lexer(testString);
+    const testLexer = createLexer(testString);
 
     const expectedTokens = [
       { type: token.ASSIGN, literal: "=" },
@@ -49,7 +49,7 @@ describe("Lexer.nextToken()", () => {
           ;
 
     `;
-    const testLexer = Lexer(testString);
+    const testLexer = createLexer(testString);
 
     const expectedTokens = [
       { type: token.COMMA, literal: "," },
@@ -67,7 +67,7 @@ describe("Lexer.nextToken()", () => {
   it("assigns token for keywords and identifiers", () => {
     const testString =
       "fn sang let true Hello WORLD false twenty_three if else return";
-    const testLexer = Lexer(testString);
+    const testLexer = createLexer(testString);
 
     const expectedTokens = [
       { type: token.FUNCTION, literal: "fn" },
@@ -91,7 +91,7 @@ describe("Lexer.nextToken()", () => {
 
   it("assigns token for single digits", () => {
     const testString = "0 1 2 3 4 5 6 7 8 9";
-    const testLexer = Lexer(testString);
+    const testLexer = createLexer(testString);
 
     const expectedTokens = [
       { type: token.INT, literal: "0" },
@@ -114,7 +114,7 @@ describe("Lexer.nextToken()", () => {
 
   it("assigns token for long digits", () => {
     const testString = "01 2345678 90000000000000";
-    const testLexer = Lexer(testString);
+    const testLexer = createLexer(testString);
 
     const expectedTokens = [
       { type: token.INT, literal: "01" },
@@ -130,7 +130,7 @@ describe("Lexer.nextToken()", () => {
 
   it("assigns token for double char operators", () => {
     const testString = "== !=";
-    const testLexer = Lexer(testString);
+    const testLexer = createLexer(testString);
 
     const expectedTokens = [
       { type: token.EQ, literal: "==" },
@@ -145,7 +145,7 @@ describe("Lexer.nextToken()", () => {
 
   it("assigns illegal tokens", () => {
     const testString = ".&£";
-    const testLexer = Lexer(testString);
+    const testLexer = createLexer(testString);
 
     const expectedTokens = [
       { type: token.ILLEGAL, literal: "." },
