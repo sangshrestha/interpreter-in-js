@@ -22,4 +22,8 @@ function testIntegerObject(object, expected) {
   it("is an instance of Integer", () => {
     expect(object instanceof Integer).toEqual(true);
   });
+
+  it("holds expected value", () => {
+    expect(object.value).toEqual(expected);
+  });
 }

@@ -1,6 +1,7 @@
 import readline from "node:readline/promises";
-import { Lexer } from "./lexer/lexer.js";
-import { Parser } from "./parser/parser.js";
+import { createLexer } from "./lexer/lexer.js";
+import { createParser } from "./parser/parser.js";
+import { evaluate } from "./evaluator/evaluator.js";
 
 while (true) {
   const rl = readline.createInterface({
@@ -10,7 +11,7 @@ while (true) {
 
   const code = await rl.question(">> ");
 
-  const inputParser = Parser(Lexer(code));
+  const inputParser = createParser(createLexer(code));
   const inputProgram = inputParser.parseProgram();
 
   const parserErrors = inputParser.getErrors();
@@ -19,7 +20,21 @@ while (true) {
     console.error(parserErrors);
   }
 
-  console.log(inputProgram.string());
+  const evaluated = evaluate(inputProgram);
+
+  if (evaluated != null) {
+    //const logerLexer = createLexer(code);
+    //console.log("Lexer: ", logerLexer.nextToken());
+    //
+    //const loggerParserLexer = createLexer(code);
+    //const loggerParser = createParser(loggerParserLexer);
+    //const loggerProgram = loggerParser.parseProgram();
+    //console.log("Parser: ", loggerProgram.statements);
+    //
+    //console.log("Eval: ", evaluated);
+
+    console.log(evaluated.inspect());
+  }
 
   rl.close();
 }

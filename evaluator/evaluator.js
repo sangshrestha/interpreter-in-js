@@ -1,5 +1,5 @@
-import { ExpressionStatement, IntegerLiteral, Program } from "../ast/ast";
-import { Integer } from "../object/object";
+import { ExpressionStatement, IntegerLiteral, Program } from "../ast/ast.js";
+import { Integer } from "../object/object.js";
 
 export function evaluate(node) {
   switch (node.constructor) {
