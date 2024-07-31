@@ -403,7 +403,7 @@ export function Parser(lexer) {
       advanceToken();
     }
 
-    return Program(statements);
+    return new Program(statements);
   }
 
   return {

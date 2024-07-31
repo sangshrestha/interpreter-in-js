@@ -12,7 +12,7 @@ describe("Program string output", () => {
       ),
     ),
   ];
-  const program = Program(statements);
+  const program = new Program(statements);
 
   it("outputs correct string", () => {
     expect(program.string()).toEqual("let myVar = anotherVar;");

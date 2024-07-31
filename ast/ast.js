@@ -6,7 +6,11 @@ export class Node {
   }
 
   tokenLiteral() {
-    return this.token.literal;
+    if (this.token && this.token.literal) {
+      return this.token.literal;
+    } else {
+      return "";
+    }
   }
 }
 
@@ -182,22 +186,14 @@ export class CallExpression extends Expression {
   }
 }
 
-export function Program(statements) {
-  function tokenLiteral() {
-    if (statements.length > 0) {
-      return statements[0].tokenLiteral();
-    } else {
-      return "";
-    }
+export class Program extends Node {
+  constructor(statements) {
+    super();
+    this.statements = statements;
+    this.token = statements.length > 0 ? statements[0].token : null;
   }
 
-  function string() {
-    return statements.map((statement) => statement.string()).join("");
+  string() {
+    return this.statements.map((statement) => statement.string()).join("");
   }
-
-  return {
-    statements,
-    tokenLiteral,
-    string,
-  };
 }
