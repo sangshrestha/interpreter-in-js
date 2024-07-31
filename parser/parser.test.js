@@ -1,5 +1,17 @@
 import { Parser } from "./parser";
 import { Lexer } from "../lexer/lexer";
+import {
+  Bool,
+  CallExpression,
+  FunctionLiteral,
+  Identifier,
+  IfExpression,
+  InfixExpression,
+  IntegerLiteral,
+  LetStatement,
+  PrefixExpression,
+  ReturnStatement,
+} from "../ast/ast";
 
 describe.each([
   ["let x = 5;", "x", 5],
@@ -14,6 +26,10 @@ describe.each([
   });
 
   const statement = program.statements[0];
+
+  it("is an instance of LetStatement", () => {
+    expect(statement instanceof LetStatement).toEqual(true);
+  });
 
   it("outputs expected token literal", () => {
     expect(statement.tokenLiteral()).toEqual("let");
@@ -44,6 +60,10 @@ describe.each([
 
   const statement = program.statements[0];
 
+  it("is an instance of ReturnStatement", () => {
+    expect(statement instanceof ReturnStatement).toEqual(true);
+  });
+
   it("outputs expected token literal", () => {
     expect(statement.tokenLiteral()).toEqual("return");
   });
@@ -64,6 +84,7 @@ describe.each([
   });
 
   const { expression } = program.statements[0];
+
   testIdentifier(expression, ident);
 });
 
@@ -98,6 +119,10 @@ describe.each([
   });
 
   const { expression } = program.statements[0];
+
+  it("is an instance of PrefixExpression", () => {
+    expect(expression instanceof PrefixExpression).toEqual(true);
+  });
 
   it("outputs correct operator", () => {
     expect(expression.operator).toEqual(operator);
@@ -193,6 +218,10 @@ describe("Parse if expression", () => {
 
   const { expression } = program.statements[0];
 
+  it("is an instance of IfExpression", () => {
+    expect(expression instanceof IfExpression).toEqual(true);
+  });
+
   testInfixExpression(expression.condition, "x", "<", "y");
 
   it("outputs expected number of consequences", () => {
@@ -247,6 +276,10 @@ describe("Parse function literal", () => {
 
   const { expression } = program.statements[0];
 
+  it("is an instance of FunctionLiteral", () => {
+    expect(expression instanceof FunctionLiteral).toEqual(true);
+  });
+
   it("outputs expected number of parameters", () => {
     expect(expression.parameters.length).toEqual(2);
   });
@@ -287,6 +320,10 @@ describe("Parse call expression", () => {
 
   const { expression } = program.statements[0];
 
+  it("is an instance of CallExpression", () => {
+    expect(expression instanceof CallExpression).toEqual(true);
+  });
+
   testIdentifier(expression.functionExpression, "add");
 
   it("outputs expected number of arguments", () => {
@@ -310,6 +347,10 @@ function checkParserErrors(parser) {
 }
 
 function testIntegerLiteral(expression, value) {
+  it("is an instance of IntegerLiteral", () => {
+    expect(expression instanceof IntegerLiteral).toEqual(true);
+  });
+
   it("outputs expected integer value", () => {
     expect(expression.value).toEqual(value);
   });
@@ -320,6 +361,10 @@ function testIntegerLiteral(expression, value) {
 }
 
 function testIdentifier(expression, value) {
+  it("is an instance of Identifier", () => {
+    expect(expression instanceof Identifier).toEqual(true);
+  });
+
   it("outputs expected identifier value", () => {
     expect(expression.value).toEqual(value);
   });
@@ -329,7 +374,11 @@ function testIdentifier(expression, value) {
   });
 }
 
-function testBoolean(expression, value) {
+function testBool(expression, value) {
+  it("is an instance of Bool", () => {
+    expect(expression instanceof Bool).toEqual(true);
+  });
+
   it("outputs expected boolean value", () => {
     expect(expression.value).toEqual(value);
   });
@@ -348,13 +397,17 @@ function testLiteralExpression(expression, expected) {
       return testIdentifier(expression, expected);
 
     case "boolean":
-      return testBoolean(expression, expected);
+      return testBool(expression, expected);
   }
 
   throw new Error(`type of expected: ${typeof expected} not handled`);
 }
 
 function testInfixExpression(expression, leftVal, operator, rightVal) {
+  it("is an instance of InfixExpression", () => {
+    expect(expression instanceof InfixExpression).toEqual(true);
+  });
+
   testLiteralExpression(expression.leftExpression, leftVal);
 
   it("outputs correct operator", () => {
