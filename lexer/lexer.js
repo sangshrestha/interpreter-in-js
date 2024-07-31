@@ -59,83 +59,83 @@ export function createLexer(input) {
 
     switch (getChar()) {
       case ",":
-        thisToken = token.Token(token.COMMA, getChar());
+        thisToken = new token.Token(token.COMMA, getChar());
         break;
 
       case ";":
-        thisToken = token.Token(token.SEMICOLON, getChar());
+        thisToken = new token.Token(token.SEMICOLON, getChar());
         break;
 
       case "(":
-        thisToken = token.Token(token.LPAREN, getChar());
+        thisToken = new token.Token(token.LPAREN, getChar());
         break;
 
       case ")":
-        thisToken = token.Token(token.RPAREN, getChar());
+        thisToken = new token.Token(token.RPAREN, getChar());
         break;
 
       case "{":
-        thisToken = token.Token(token.LBRACE, getChar());
+        thisToken = new token.Token(token.LBRACE, getChar());
         break;
 
       case "}":
-        thisToken = token.Token(token.RBRACE, getChar());
+        thisToken = new token.Token(token.RBRACE, getChar());
         break;
 
       case "=":
         if (peekChar() === "=") {
           updateIndex();
-          thisToken = token.Token(token.EQ, "==");
+          thisToken = new token.Token(token.EQ, "==");
         } else {
-          thisToken = token.Token(token.ASSIGN, getChar());
+          thisToken = new token.Token(token.ASSIGN, getChar());
         }
         break;
 
       case "+":
-        thisToken = token.Token(token.PLUS, getChar());
+        thisToken = new token.Token(token.PLUS, getChar());
         break;
 
       case "-":
-        thisToken = token.Token(token.MINUS, getChar());
+        thisToken = new token.Token(token.MINUS, getChar());
         break;
 
       case "!":
         if (peekChar() === "=") {
           updateIndex();
-          thisToken = token.Token(token.NOT_EQ, "!=");
+          thisToken = new token.Token(token.NOT_EQ, "!=");
         } else {
-          thisToken = token.Token(token.BANG, getChar());
+          thisToken = new token.Token(token.BANG, getChar());
         }
         break;
 
       case "*":
-        thisToken = token.Token(token.ASTERISK, getChar());
+        thisToken = new token.Token(token.ASTERISK, getChar());
         break;
 
       case "/":
-        thisToken = token.Token(token.SLASH, getChar());
+        thisToken = new token.Token(token.SLASH, getChar());
         break;
 
       case "<":
-        thisToken = token.Token(token.LT, getChar());
+        thisToken = new token.Token(token.LT, getChar());
         break;
 
       case ">":
-        thisToken = token.Token(token.GT, getChar());
+        thisToken = new token.Token(token.GT, getChar());
         break;
 
       case 0:
-        thisToken = token.Token(token.EOF, "");
+        thisToken = new token.Token(token.EOF, "");
         break;
 
       default:
         if (isLetter(getChar())) {
           const ident = readIdentifier();
-          return token.Token(token.lookupIdent(ident), ident);
+          return new token.Token(token.lookupIdent(ident), ident);
         } else if (isDigitString(getChar())) {
-          return token.Token(token.INT, readDigit());
+          return new token.Token(token.INT, readDigit());
         } else {
-          thisToken = token.Token(token.ILLEGAL, getChar());
+          thisToken = new token.Token(token.ILLEGAL, getChar());
         }
     }
 

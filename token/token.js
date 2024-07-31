@@ -44,6 +44,9 @@ export function lookupIdent(ident) {
   return keywords[ident] || IDENT;
 }
 
-export function Token(type, literal) {
-  return { type, literal };
+export class Token {
+  constructor(type, literal) {
+    this.type = type;
+    this.literal = literal;
+  }
 }
