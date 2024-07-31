@@ -106,7 +106,7 @@ export class InfixExpression extends Expression {
 }
 
 // Bool instead of Boolean to not confuse with the built-in Boolean constructor
-export class Bool extends Expression {
+export class BooleanExpression extends Expression {
   constructor(token, value) {
     super();
     this.token = token;

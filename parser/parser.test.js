@@ -1,7 +1,7 @@
 import { createParser } from "./parser";
 import { createLexer } from "../lexer/lexer";
 import {
-  Bool,
+  BooleanExpression,
   CallExpression,
   FunctionLiteral,
   Identifier,
@@ -374,9 +374,9 @@ function testIdentifier(expression, value) {
   });
 }
 
-function testBool(expression, value) {
-  it("is an instance of Bool", () => {
-    expect(expression instanceof Bool).toEqual(true);
+function testBooleanExpression(expression, value) {
+  it("is an instance of BooleanExpression", () => {
+    expect(expression instanceof BooleanExpression).toEqual(true);
   });
 
   it("outputs expected boolean value", () => {
@@ -397,7 +397,7 @@ function testLiteralExpression(expression, expected) {
       return testIdentifier(expression, expected);
 
     case "boolean":
-      return testBool(expression, expected);
+      return testBooleanExpression(expression, expected);
   }
 
   throw new Error(`type of expected: ${typeof expected} not handled`);

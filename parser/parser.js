@@ -1,6 +1,6 @@
 import {
   BlockStatement,
-  Bool,
+  BooleanExpression,
   CallExpression,
   ExpressionStatement,
   FunctionLiteral,
@@ -46,8 +46,8 @@ export function createParser(lexer) {
     [token.INT]: parseIntegerLiteral,
     [token.BANG]: parsePrefixExpression,
     [token.MINUS]: parsePrefixExpression,
-    [token.TRUE]: parseBool,
-    [token.FALSE]: parseBool,
+    [token.TRUE]: parseBooleanExpression,
+    [token.FALSE]: parseBooleanExpression,
     [token.LPAREN]: parseGroupExpression,
     [token.IF]: parseIfExpression,
     [token.FUNCTION]: parseFunctionLiteral,
@@ -177,8 +177,11 @@ export function createParser(lexer) {
     return new ReturnStatement(returnToken, returnExpression);
   }
 
-  function parseBool() {
-    return new Bool(currentToken, currentToken.type === token.TRUE);
+  function parseBooleanExpression() {
+    return new BooleanExpression(
+      currentToken,
+      currentToken.type === token.TRUE,
+    );
   }
 
   function parseBlockStatement() {

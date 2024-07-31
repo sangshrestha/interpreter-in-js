@@ -1,5 +1,13 @@
-import { ExpressionStatement, IntegerLiteral, Program } from "../ast/ast.js";
-import { Integer } from "../object/object.js";
+import {
+  BooleanExpression,
+  ExpressionStatement,
+  IntegerLiteral,
+  Program,
+} from "../ast/ast.js";
+import { Bool, Integer } from "../object/object.js";
+
+const TRUE = new Bool(true);
+const FALSE = new Bool(false);
 
 export function evaluate(node) {
   switch (node.constructor) {
@@ -11,6 +19,9 @@ export function evaluate(node) {
 
     case IntegerLiteral:
       return new Integer(node.value);
+
+    case BooleanExpression:
+      return node.value ? TRUE : FALSE;
   }
 
   return null;
