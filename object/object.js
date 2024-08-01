@@ -32,7 +32,7 @@ export class Bool {
 
 export class Null {
   inspect() {
-    return "null";
+    return "KEKW";
   }
 
   type() {

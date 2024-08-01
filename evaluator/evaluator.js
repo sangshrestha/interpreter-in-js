@@ -6,7 +6,13 @@ import {
   InfixExpression,
   Program,
 } from "../ast/ast.js";
-import { Bool, Integer, INTEGER_OBJ, Null } from "../object/object.js";
+import {
+  Bool,
+  BOOLEAN_OBJ,
+  Integer,
+  INTEGER_OBJ,
+  Null,
+} from "../object/object.js";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
@@ -87,6 +93,14 @@ function evaluateInfixExpression(left, operator, right) {
     return evaluateIntegerInfixExpression(left, operator, right);
   }
 
+  if (operator === "==") {
+    return left.value === right.value ? TRUE : FALSE;
+  }
+
+  if (operator === "!=") {
+    return left.value !== right.value ? TRUE : FALSE;
+  }
+
   return NULL;
 }
 
@@ -103,6 +117,18 @@ function evaluateIntegerInfixExpression(left, operator, right) {
 
     case "/":
       return new Integer(left.value / right.value);
+
+    case "<":
+      return left.value < right.value ? TRUE : FALSE;
+
+    case ">":
+      return left.value > right.value ? TRUE : FALSE;
+
+    case "==":
+      return left.value === right.value ? TRUE : FALSE;
+
+    case "!=":
+      return left.value !== right.value ? TRUE : FALSE;
 
     default:
       return NULL;

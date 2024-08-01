@@ -31,6 +31,21 @@ describe.each([
 describe.each([
   ["false", false],
   ["true", true],
+  ["1 < 2", true],
+  ["1 > 2", false],
+  ["1 < 1", false],
+  ["1 > 1", false],
+  ["1 == 1", true],
+  ["1 != 1", false],
+  ["1 == 2", false],
+  ["1 != 2", true],
+  ["true == true", true],
+  ["false == false", true],
+  ["true == false", false],
+  ["true != false", true],
+  ["false != true", true],
+  ["(1 < 2) == true", true],
+  ["(1 < 2) == false", false],
 ])("Evaluate boolean expression", (input, expected) => {
   const evaluated = testEvaluate(input);
   testBoolObject(evaluated, expected);
