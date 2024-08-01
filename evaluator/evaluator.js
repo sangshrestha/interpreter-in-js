@@ -5,7 +5,7 @@ import {
   PrefixExpression,
   Program,
 } from "../ast/ast.js";
-import { Bool, Integer, Null } from "../object/object.js";
+import { Bool, Integer, INTEGER_OBJ, Null } from "../object/object.js";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
@@ -57,9 +57,19 @@ function evaluatePrefixExpression(operator, right) {
     }
   }
 
+  function evaluateMinusOperatorExpression(object) {
+    if (object.type() !== INTEGER_OBJ) {
+      return NULL;
+    }
+    return new Integer(-object.value);
+  }
+
   switch (operator) {
     case "!":
       return evaluateBangOperatorExpression(right);
+
+    case "-":
+      return evaluateMinusOperatorExpression(right);
 
     default:
       return NULL;

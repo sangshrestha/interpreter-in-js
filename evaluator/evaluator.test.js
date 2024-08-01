@@ -8,6 +8,10 @@ import { createParser } from "../parser/parser";
 describe.each([
   ["5", 5],
   ["10", 10],
+  ["-5", -5],
+  ["-10", -10],
+  ["-(-5)", 5],
+  ["-(-10)", 10],
 ])("Evaluate integer expression", (input, expected) => {
   const evaluated = testEvaluate(input);
   testIntegerObject(evaluated, expected);

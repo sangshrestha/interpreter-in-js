@@ -1,6 +1,6 @@
-const INTEGER_OBJ = "INTEGER";
-const BOOLEAN_OBJ = "BOOLEAN";
-const NULL_OBJ = "NULL";
+export const INTEGER_OBJ = "INTEGER";
+export const BOOLEAN_OBJ = "BOOLEAN";
+export const NULL_OBJ = "NULL";
 
 export class Integer {
   constructor(value) {
