@@ -3,6 +3,7 @@ import {
   ExpressionStatement,
   IntegerLiteral,
   PrefixExpression,
+  InfixExpression,
   Program,
 } from "../ast/ast.js";
 import { Bool, Integer, INTEGER_OBJ, Null } from "../object/object.js";
@@ -28,6 +29,11 @@ export function evaluate(node) {
     case PrefixExpression:
       const right = evaluate(node.rightExpression);
       return evaluatePrefixExpression(node.operator, right);
+
+    case InfixExpression:
+      const infixLeft = evaluate(node.leftExpression);
+      const infixRight = evaluate(node.rightExpression);
+      return evaluateInfixExpression(infixLeft, node.operator, infixRight);
   }
 
   return NULL;
@@ -44,32 +50,59 @@ function evaluateStatements(statements) {
 }
 
 function evaluatePrefixExpression(operator, right) {
-  function evaluateBangOperatorExpression(object) {
-    switch (object) {
-      case TRUE:
-        return FALSE;
-      case FALSE:
-        return TRUE;
-      case NULL:
-        return TRUE;
-      default:
-        return FALSE;
-    }
-  }
-
-  function evaluateMinusOperatorExpression(object) {
-    if (object.type() !== INTEGER_OBJ) {
-      return NULL;
-    }
-    return new Integer(-object.value);
-  }
-
   switch (operator) {
     case "!":
       return evaluateBangOperatorExpression(right);
 
     case "-":
       return evaluateMinusOperatorExpression(right);
+
+    default:
+      return NULL;
+  }
+}
+
+function evaluateBangOperatorExpression(object) {
+  switch (object) {
+    case TRUE:
+      return FALSE;
+    case FALSE:
+      return TRUE;
+    case NULL:
+      return TRUE;
+    default:
+      return FALSE;
+  }
+}
+
+function evaluateMinusOperatorExpression(object) {
+  if (object.type() !== INTEGER_OBJ) {
+    return NULL;
+  }
+  return new Integer(-object.value);
+}
+
+function evaluateInfixExpression(left, operator, right) {
+  if (left.type() == INTEGER_OBJ && right.type() == INTEGER_OBJ) {
+    return evaluateIntegerInfixExpression(left, operator, right);
+  }
+
+  return NULL;
+}
+
+function evaluateIntegerInfixExpression(left, operator, right) {
+  switch (operator) {
+    case "+":
+      return new Integer(left.value + right.value);
+
+    case "-":
+      return new Integer(left.value - right.value);
+
+    case "*":
+      return new Integer(left.value * right.value);
+
+    case "/":
+      return new Integer(left.value / right.value);
 
     default:
       return NULL;
