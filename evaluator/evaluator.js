@@ -2,12 +2,14 @@ import {
   BooleanExpression,
   ExpressionStatement,
   IntegerLiteral,
+  PrefixExpression,
   Program,
 } from "../ast/ast.js";
-import { Bool, Integer } from "../object/object.js";
+import { Bool, Integer, Null } from "../object/object.js";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
+const NULL = new Null();
 
 export function evaluate(node) {
   switch (node.constructor) {
@@ -22,9 +24,13 @@ export function evaluate(node) {
 
     case BooleanExpression:
       return node.value ? TRUE : FALSE;
+
+    case PrefixExpression:
+      const right = evaluate(node.rightExpression);
+      return evaluatePrefixExpression(node.operator, right);
   }
 
-  return null;
+  return NULL;
 }
 
 function evaluateStatements(statements) {
@@ -35,4 +41,27 @@ function evaluateStatements(statements) {
   }
 
   return result;
+}
+
+function evaluatePrefixExpression(operator, right) {
+  function evaluateBangOperatorExpression(object) {
+    switch (object) {
+      case TRUE:
+        return FALSE;
+      case FALSE:
+        return TRUE;
+      case NULL:
+        return TRUE;
+      default:
+        return FALSE;
+    }
+  }
+
+  switch (operator) {
+    case "!":
+      return evaluateBangOperatorExpression(right);
+
+    default:
+      return NULL;
+  }
 }

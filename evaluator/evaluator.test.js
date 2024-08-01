@@ -1,3 +1,5 @@
+import { expect } from "@jest/globals";
+
 import { evaluate } from "../evaluator/evaluator.js";
 import { createLexer } from "../lexer/lexer";
 import { Integer, Bool } from "../object/object.js";
@@ -15,6 +17,18 @@ describe.each([
   ["false", false],
   ["true", true],
 ])("Evaluate boolean expression", (input, expected) => {
+  const evaluated = testEvaluate(input);
+  testBoolObject(evaluated, expected);
+});
+
+describe.each([
+  ["!true", false],
+  ["!false", true],
+  ["!5", false],
+  ["!!true", true],
+  ["!!false", false],
+  ["!!5", true],
+])("Evaluate bang operator", (input, expected) => {
   const evaluated = testEvaluate(input);
   testBoolObject(evaluated, expected);
 });
