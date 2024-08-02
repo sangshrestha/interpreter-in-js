@@ -1,6 +1,6 @@
 import { expect } from "@jest/globals";
 
-import { evaluate } from "../evaluator/evaluator.js";
+import { evaluate, NULL } from "../evaluator/evaluator.js";
 import { createLexer } from "../lexer/lexer";
 import { Integer, Bool } from "../object/object.js";
 import { createParser } from "../parser/parser";
@@ -63,6 +63,23 @@ describe.each([
   testBoolObject(evaluated, expected);
 });
 
+describe.each([
+  ["if (true) { 10 }", 10],
+  ["if (false) { 10 }", null],
+  ["if (1) { 10 }", 10],
+  ["if (1 < 2) { 10 }", 10],
+  ["if (1 > 2) { 10 }", null],
+  ["if (1 > 2) { 10 } else { 20 }", 20],
+  ["if (1 < 2) { 10 } else { 20 }", 10],
+])("Evaluate if else expression", (input, expected) => {
+  const evaluated = testEvaluate(input);
+  if (typeof expected === "number") {
+    testIntegerObject(evaluated, expected);
+  } else {
+    testNullObject(evaluated);
+  }
+});
+
 function testEvaluate(input) {
   const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
@@ -87,5 +104,11 @@ function testBoolObject(object, expected) {
 
   it("holds expected value", () => {
     expect(object.value).toEqual(expected);
+  });
+}
+
+function testNullObject(object) {
+  it("is null", () => {
+    expect(object).toEqual(NULL);
   });
 }

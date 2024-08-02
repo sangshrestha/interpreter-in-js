@@ -5,18 +5,14 @@ import {
   PrefixExpression,
   InfixExpression,
   Program,
+  IfExpression,
+  BlockStatement,
 } from "../ast/ast.js";
-import {
-  Bool,
-  BOOLEAN_OBJ,
-  Integer,
-  INTEGER_OBJ,
-  Null,
-} from "../object/object.js";
+import { Bool, Integer, INTEGER_OBJ, Null } from "../object/object.js";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
-const NULL = new Null();
+export const NULL = new Null();
 
 export function evaluate(node) {
   switch (node.constructor) {
@@ -40,6 +36,12 @@ export function evaluate(node) {
       const infixLeft = evaluate(node.leftExpression);
       const infixRight = evaluate(node.rightExpression);
       return evaluateInfixExpression(infixLeft, node.operator, infixRight);
+
+    case BlockStatement:
+      return evaluateStatements(node.statements);
+
+    case IfExpression:
+      return evaluateIfExpression(node);
   }
 
   return NULL;
@@ -132,5 +134,34 @@ function evaluateIntegerInfixExpression(left, operator, right) {
 
     default:
       return NULL;
+  }
+}
+
+function evaluateIfExpression(node) {
+  const { condition, consequence, alternative } = node;
+  const evalCondition = evaluate(condition);
+
+  if (isTruthy(evalCondition)) {
+    return evaluate(consequence);
+  } else if (alternative !== null) {
+    return evaluate(alternative);
+  } else {
+    return NULL;
+  }
+}
+
+function isTruthy(object) {
+  switch (object) {
+    case NULL:
+      return false;
+
+    case TRUE:
+      return true;
+
+    case FALSE:
+      return false;
+
+    default:
+      return true;
   }
 }
