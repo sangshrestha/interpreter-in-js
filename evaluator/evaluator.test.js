@@ -80,6 +80,17 @@ describe.each([
   }
 });
 
+describe.each([
+  ["return 10;", 10],
+  ["return 10; 9;", 10],
+  ["return 2 * 5; 9;", 10],
+  ["9; return 2 * 5; 9;", 10],
+  ["if (10 > 1) {if (10 > 1) {return 10;} return 1;}", 10],
+])("Evaluate return statement", (input, expected) => {
+  const evaluated = testEvaluate(input);
+  testIntegerObject(evaluated, expected);
+});
+
 function testEvaluate(input) {
   const parser = createParser(createLexer(input));
   const program = parser.parseProgram();

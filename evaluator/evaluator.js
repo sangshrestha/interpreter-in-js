@@ -7,8 +7,16 @@ import {
   Program,
   IfExpression,
   BlockStatement,
+  ReturnStatement,
 } from "../ast/ast.js";
-import { Bool, Integer, INTEGER_OBJ, Null } from "../object/object.js";
+import {
+  Bool,
+  Integer,
+  INTEGER_OBJ,
+  Null,
+  RETURN_VALUE_OBJ,
+  ReturnValue,
+} from "../object/object.js";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
@@ -17,7 +25,7 @@ export const NULL = new Null();
 export function evaluate(node) {
   switch (node.constructor) {
     case Program:
-      return evaluateStatements(node.statements);
+      return evaluateProgram(node.statements);
 
     case ExpressionStatement:
       return evaluate(node.expression);
@@ -38,20 +46,42 @@ export function evaluate(node) {
       return evaluateInfixExpression(infixLeft, node.operator, infixRight);
 
     case BlockStatement:
-      return evaluateStatements(node.statements);
+      return evaluateBlockStatement(node.statements);
 
     case IfExpression:
       return evaluateIfExpression(node);
+
+    case ReturnStatement:
+      const returnVal = evaluate(node.expression);
+      return new ReturnValue(returnVal);
   }
 
   return NULL;
 }
 
-function evaluateStatements(statements) {
+function evaluateProgram(statements) {
   let result;
 
   for (const statement of statements) {
     result = evaluate(statement);
+
+    if (result instanceof ReturnValue) {
+      return result.value;
+    }
+  }
+
+  return result;
+}
+
+function evaluateBlockStatement(statements) {
+  let result;
+
+  for (const statement of statements) {
+    result = evaluate(statement);
+
+    if (result !== null && result.type() === RETURN_VALUE_OBJ) {
+      return result;
+    }
   }
 
   return result;
