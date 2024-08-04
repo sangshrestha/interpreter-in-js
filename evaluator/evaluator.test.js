@@ -2,7 +2,7 @@ import { expect } from "@jest/globals";
 
 import { evaluate, NULL } from "../evaluator/evaluator.js";
 import { createLexer } from "../lexer/lexer";
-import { Integer, Bool } from "../object/object.js";
+import { Integer, Bool, Err } from "../object/object.js";
 import { createParser } from "../parser/parser";
 
 describe.each([
@@ -91,6 +91,22 @@ describe.each([
   testIntegerObject(evaluated, expected);
 });
 
+describe.each([
+  ["5 + true;", "type mismatch: INTEGER + BOOLEAN"],
+  ["5 + true; 5;", "type mismatch: INTEGER + BOOLEAN"],
+  ["-true", "unknown operator: -BOOLEAN"],
+  ["true + false;", "unknown operator: BOOLEAN + BOOLEAN"],
+  ["5; true + false; 5", "unknown operator: BOOLEAN + BOOLEAN"],
+  ["if (10 > 1) { true + false; }", "unknown operator: BOOLEAN + BOOLEAN"],
+  [
+    "if (10 > 1) {if (10 > 1) {return true + false;}return 1;}",
+    "unknown operator: BOOLEAN + BOOLEAN",
+  ],
+])("Evaluate error handling", (input, expected) => {
+  const evaluated = testEvaluate(input);
+  testErrorObject(evaluated, expected);
+});
+
 function testEvaluate(input) {
   const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
@@ -121,5 +137,15 @@ function testBoolObject(object, expected) {
 function testNullObject(object) {
   it("is null", () => {
     expect(object).toEqual(NULL);
+  });
+}
+
+function testErrorObject(object, expected) {
+  it("is an instance of Err", () => {
+    expect(object instanceof Err).toEqual(true);
+  });
+
+  it("holds expected message", () => {
+    expect(object.message).toEqual(expected);
   });
 }

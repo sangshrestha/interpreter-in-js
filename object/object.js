@@ -2,6 +2,7 @@ export const INTEGER_OBJ = "INTEGER";
 export const BOOLEAN_OBJ = "BOOLEAN";
 export const NULL_OBJ = "NULL";
 export const RETURN_VALUE_OBJ = "RETURN_VALUE";
+export const ERR_OBJ = "ERR";
 
 export class Integer {
   constructor(value) {
@@ -52,5 +53,19 @@ export class ReturnValue {
 
   type() {
     return RETURN_VALUE_OBJ;
+  }
+}
+
+export class Err {
+  constructor(message) {
+    this.message = message;
+  }
+
+  inspect() {
+    return `ERROR: ${this.message}`;
+  }
+
+  type() {
+    return ERR_OBJ;
   }
 }

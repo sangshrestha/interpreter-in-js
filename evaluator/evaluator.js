@@ -11,6 +11,8 @@ import {
 } from "../ast/ast.js";
 import {
   Bool,
+  Err,
+  ERR_OBJ,
   Integer,
   INTEGER_OBJ,
   Null,
@@ -38,11 +40,25 @@ export function evaluate(node) {
 
     case PrefixExpression:
       const right = evaluate(node.rightExpression);
+
+      if (isErr(right)) {
+        return right;
+      }
       return evaluatePrefixExpression(node.operator, right);
 
     case InfixExpression:
       const infixLeft = evaluate(node.leftExpression);
+
+      if (isErr(infixLeft)) {
+        return infixLeft;
+      }
+
       const infixRight = evaluate(node.rightExpression);
+
+      if (isErr(infixRight)) {
+        return infixRight;
+      }
+
       return evaluateInfixExpression(infixLeft, node.operator, infixRight);
 
     case BlockStatement:
@@ -53,6 +69,11 @@ export function evaluate(node) {
 
     case ReturnStatement:
       const returnVal = evaluate(node.expression);
+
+      if (isErr(returnVal)) {
+        return returnVal;
+      }
+
       return new ReturnValue(returnVal);
   }
 
@@ -65,8 +86,12 @@ function evaluateProgram(statements) {
   for (const statement of statements) {
     result = evaluate(statement);
 
-    if (result instanceof ReturnValue) {
-      return result.value;
+    switch (result.constructor) {
+      case ReturnValue:
+        return result.value;
+
+      case Err:
+        return result;
     }
   }
 
@@ -79,12 +104,18 @@ function evaluateBlockStatement(statements) {
   for (const statement of statements) {
     result = evaluate(statement);
 
-    if (result !== null && result.type() === RETURN_VALUE_OBJ) {
-      return result;
+    if (result !== null) {
+      const resultType = result.type();
+      if (resultType === ERR_OBJ || resultType === RETURN_VALUE_OBJ) {
+        return result;
+      }
     }
   }
 
   return result;
+}
+function isErr(object) {
+  return object !== null && object.type() === ERR_OBJ;
 }
 
 function evaluatePrefixExpression(operator, right) {
@@ -96,7 +127,7 @@ function evaluatePrefixExpression(operator, right) {
       return evaluateMinusOperatorExpression(right);
 
     default:
-      return NULL;
+      return new Err(`unknown operator: ${operator}${right.type()}`);
   }
 }
 
@@ -115,7 +146,7 @@ function evaluateBangOperatorExpression(object) {
 
 function evaluateMinusOperatorExpression(object) {
   if (object.type() !== INTEGER_OBJ) {
-    return NULL;
+    return new Err(`unknown operator: -${object.type()}`);
   }
   return new Integer(-object.value);
 }
@@ -133,7 +164,13 @@ function evaluateInfixExpression(left, operator, right) {
     return left.value !== right.value ? TRUE : FALSE;
   }
 
-  return NULL;
+  if (left.type() !== right.type()) {
+    return new Err(`type mismatch: ${left.type()} ${operator} ${right.type()}`);
+  }
+
+  return new Err(
+    `unknown operator: ${left.type()} ${operator} ${right.type()}`,
+  );
 }
 
 function evaluateIntegerInfixExpression(left, operator, right) {
@@ -163,13 +200,19 @@ function evaluateIntegerInfixExpression(left, operator, right) {
       return left.value !== right.value ? TRUE : FALSE;
 
     default:
-      return NULL;
+      return new Err(
+        `unknown operator: ${left.type()} ${operator} ${right.type()}`,
+      );
   }
 }
 
 function evaluateIfExpression(node) {
   const { condition, consequence, alternative } = node;
   const evalCondition = evaluate(condition);
+
+  if (isErr(evalCondition)) {
+    return evalCondition;
+  }
 
   if (isTruthy(evalCondition)) {
     return evaluate(consequence);
