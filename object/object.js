@@ -69,3 +69,26 @@ export class Err {
     return ERR_OBJ;
   }
 }
+
+export function newEnvironment() {
+  const store = {};
+
+  function get(name) {
+    return store[name];
+  }
+
+  function set(name, value) {
+    store[name] = value;
+    return value;
+  }
+
+  function see() {
+    return store;
+  }
+
+  return {
+    get,
+    set,
+    see,
+  };
+}

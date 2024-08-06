@@ -2,6 +2,9 @@ import readline from "node:readline/promises";
 import { createLexer } from "./lexer/lexer.js";
 import { createParser } from "./parser/parser.js";
 import { evaluate } from "./evaluator/evaluator.js";
+import { newEnvironment } from "./object/object.js";
+
+const env = newEnvironment();
 
 while (true) {
   const rl = readline.createInterface({
@@ -20,7 +23,7 @@ while (true) {
     console.error(parserErrors);
   }
 
-  const evaluated = evaluate(inputProgram);
+  const evaluated = evaluate(inputProgram, env);
 
   if (evaluated != null) {
     //const logerLexer = createLexer(code);

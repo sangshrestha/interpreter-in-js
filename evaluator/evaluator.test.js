@@ -2,7 +2,7 @@ import { expect } from "@jest/globals";
 
 import { evaluate, NULL } from "../evaluator/evaluator.js";
 import { createLexer } from "../lexer/lexer";
-import { Integer, Bool, Err } from "../object/object.js";
+import { Integer, Bool, Err, newEnvironment } from "../object/object.js";
 import { createParser } from "../parser/parser";
 
 describe.each([
@@ -102,16 +102,28 @@ describe.each([
     "if (10 > 1) {if (10 > 1) {return true + false;}return 1;}",
     "unknown operator: BOOLEAN + BOOLEAN",
   ],
+  ["foobar", "identifier not found: foobar"],
 ])("Evaluate error handling", (input, expected) => {
   const evaluated = testEvaluate(input);
   testErrorObject(evaluated, expected);
 });
 
+describe.each([
+  ["let a = 5; a;", 5],
+  ["let a = 5 * 5; a;", 25],
+  ["let a = 5; let b = a; b;", 5],
+  ["let a = 5; let b = a; let c = a + b + 5; c;", 15],
+])("Evaluate let statement", (input, expected) => {
+  const evaluated = testEvaluate(input);
+  testIntegerObject(evaluated, expected);
+});
+
 function testEvaluate(input) {
   const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
+  const env = newEnvironment();
 
-  return evaluate(program);
+  return evaluate(program, env);
 }
 
 function testIntegerObject(object, expected) {

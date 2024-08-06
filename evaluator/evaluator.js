@@ -8,6 +8,8 @@ import {
   IfExpression,
   BlockStatement,
   ReturnStatement,
+  LetStatement,
+  Identifier,
 } from "../ast/ast.js";
 import {
   Bool,
@@ -24,13 +26,13 @@ const TRUE = new Bool(true);
 const FALSE = new Bool(false);
 export const NULL = new Null();
 
-export function evaluate(node) {
+export function evaluate(node, environment) {
   switch (node.constructor) {
     case Program:
-      return evaluateProgram(node.statements);
+      return evaluateProgram(node.statements, environment);
 
     case ExpressionStatement:
-      return evaluate(node.expression);
+      return evaluate(node.expression, environment);
 
     case IntegerLiteral:
       return new Integer(node.value);
@@ -39,7 +41,7 @@ export function evaluate(node) {
       return node.value ? TRUE : FALSE;
 
     case PrefixExpression:
-      const right = evaluate(node.rightExpression);
+      const right = evaluate(node.rightExpression, environment);
 
       if (isErr(right)) {
         return right;
@@ -47,13 +49,13 @@ export function evaluate(node) {
       return evaluatePrefixExpression(node.operator, right);
 
     case InfixExpression:
-      const infixLeft = evaluate(node.leftExpression);
+      const infixLeft = evaluate(node.leftExpression, environment);
 
       if (isErr(infixLeft)) {
         return infixLeft;
       }
 
-      const infixRight = evaluate(node.rightExpression);
+      const infixRight = evaluate(node.rightExpression, environment);
 
       if (isErr(infixRight)) {
         return infixRight;
@@ -62,29 +64,41 @@ export function evaluate(node) {
       return evaluateInfixExpression(infixLeft, node.operator, infixRight);
 
     case BlockStatement:
-      return evaluateBlockStatement(node.statements);
+      return evaluateBlockStatement(node.statements, environment);
 
     case IfExpression:
-      return evaluateIfExpression(node);
+      return evaluateIfExpression(node, environment);
 
     case ReturnStatement:
-      const returnVal = evaluate(node.expression);
+      const returnVal = evaluate(node.expression, environment);
 
       if (isErr(returnVal)) {
         return returnVal;
       }
 
       return new ReturnValue(returnVal);
+
+    case Identifier:
+      return evaluateIdentifier(node, environment);
+
+    case LetStatement:
+      const identVal = evaluate(node.expression, environment);
+
+      if (isErr(identVal)) {
+        return identVal;
+      }
+
+      return environment.set(node.identifier.value, identVal);
   }
 
   return NULL;
 }
 
-function evaluateProgram(statements) {
+function evaluateProgram(statements, environment) {
   let result;
 
   for (const statement of statements) {
-    result = evaluate(statement);
+    result = evaluate(statement, environment);
 
     switch (result.constructor) {
       case ReturnValue:
@@ -98,11 +112,11 @@ function evaluateProgram(statements) {
   return result;
 }
 
-function evaluateBlockStatement(statements) {
+function evaluateBlockStatement(statements, environment) {
   let result;
 
   for (const statement of statements) {
-    result = evaluate(statement);
+    result = evaluate(statement, environment);
 
     if (result !== null) {
       const resultType = result.type();
@@ -206,21 +220,31 @@ function evaluateIntegerInfixExpression(left, operator, right) {
   }
 }
 
-function evaluateIfExpression(node) {
+function evaluateIfExpression(node, environment) {
   const { condition, consequence, alternative } = node;
-  const evalCondition = evaluate(condition);
+  const evalCondition = evaluate(condition, environment);
 
   if (isErr(evalCondition)) {
     return evalCondition;
   }
 
   if (isTruthy(evalCondition)) {
-    return evaluate(consequence);
+    return evaluate(consequence, environment);
   } else if (alternative !== null) {
-    return evaluate(alternative);
+    return evaluate(alternative, environment);
   } else {
     return NULL;
   }
+}
+
+function evaluateIdentifier(node, environment) {
+  const val = environment.get(node.value);
+
+  if (val) {
+    return val;
+  }
+
+  return new Err(`identifier not found: ${node.value}`);
 }
 
 function isTruthy(object) {
