@@ -106,10 +106,12 @@ export function evaluate(node, environment) {
       return evaluateIdentifier(node, environment);
 
     case LetStatement:
-      const identVal = evaluate(node.expression, environment);
+      let identVal = evaluate(node.expression, environment);
 
       if (isErr(identVal)) {
         return identVal;
+      } else if (identVal instanceof ReturnValue) {
+        identVal = identVal.value;
       }
 
       return environment.set(node.identifier.value, identVal);
