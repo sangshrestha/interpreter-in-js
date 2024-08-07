@@ -2,7 +2,13 @@ import { expect } from "@jest/globals";
 
 import { evaluate, NULL } from "../evaluator/evaluator.js";
 import { createLexer } from "../lexer/lexer";
-import { Integer, Bool, Err, newEnvironment } from "../object/object.js";
+import {
+  Integer,
+  Bool,
+  Err,
+  newEnvironment,
+  Function,
+} from "../object/object.js";
 import { createParser } from "../parser/parser";
 
 describe.each([
@@ -116,6 +122,40 @@ describe.each([
 ])("Evaluate let statement", (input, expected) => {
   const evaluated = testEvaluate(input);
   testIntegerObject(evaluated, expected);
+});
+
+describe("Test Function object", () => {
+  const input = "fn(x) { x + 2; };";
+
+  const evaluated = testEvaluate(input);
+
+  it("is an instance of Function", () => {
+    expect(evaluated instanceof Function).toEqual(true);
+  });
+});
+
+describe.each([
+  ["let identity = fn(x) { x; }; identity(5);", 5],
+  ["let identity = fn(x) { return x; }; identity(5);", 5],
+  ["let double = fn(x) { x * 2; }; double(5);", 10],
+  ["let add = fn(x, y) { x + y; }; add(5, 5);", 10],
+  ["let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20],
+  ["fn(x) { x; }(5)", 5],
+])("Evaluate function", (input, expected) => {
+  const evaluated = testEvaluate(input);
+  testIntegerObject(evaluated, expected);
+});
+
+describe("Test Closure", () => {
+  const input = `
+    let newAdder = fn(x) {
+      fn(y) { x + y };
+    };
+    let addTwo = newAdder(2);
+    addTwo(2);
+  `;
+  const evaluated = testEvaluate(input);
+  testIntegerObject(evaluated, 4);
 });
 
 function testEvaluate(input) {

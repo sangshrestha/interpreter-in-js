@@ -3,6 +3,7 @@ export const BOOLEAN_OBJ = "BOOLEAN";
 export const NULL_OBJ = "NULL";
 export const RETURN_VALUE_OBJ = "RETURN_VALUE";
 export const ERR_OBJ = "ERR";
+export const FUNCTION_OBJ = "FUNCTION";
 
 export class Integer {
   constructor(value) {
@@ -70,11 +71,41 @@ export class Err {
   }
 }
 
-export function newEnvironment() {
+export class Function {
+  constructor(parameters, body, environment) {
+    this.parameters = parameters;
+    this.body = body;
+    this.environment = environment;
+  }
+
+  inspect() {
+    const paramString = this.parameters
+      .map((param) => param.string())
+      .join(", ");
+
+    return `
+      fn(${paramString}) {
+      ${this.body.string()}
+      }
+    `;
+  }
+
+  type() {
+    return FUNCTION_OBJ;
+  }
+}
+
+export function newEnvironment(outerEnv) {
   const store = {};
 
   function get(name) {
-    return store[name];
+    let val = store[name];
+
+    if (!val && outerEnv != null) {
+      val = outerEnv.get(name);
+    }
+
+    return val;
   }
 
   function set(name, value) {

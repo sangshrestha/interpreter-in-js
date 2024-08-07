@@ -10,13 +10,17 @@ import {
   ReturnStatement,
   LetStatement,
   Identifier,
+  FunctionLiteral,
+  CallExpression,
 } from "../ast/ast.js";
 import {
   Bool,
   Err,
   ERR_OBJ,
+  Function,
   Integer,
   INTEGER_OBJ,
+  newEnvironment,
   Null,
   RETURN_VALUE_OBJ,
   ReturnValue,
@@ -78,6 +82,26 @@ export function evaluate(node, environment) {
 
       return new ReturnValue(returnVal);
 
+    case FunctionLiteral:
+      const params = node.parameters;
+      const body = node.body;
+      return new Function(params, body, environment);
+
+    case CallExpression:
+      const func = evaluate(node.functionExpression, environment);
+
+      if (isErr(func)) {
+        return func;
+      }
+
+      const args = evaluateExpressions(node.args, environment);
+
+      if (args.length === 1 && isErr(args[0])) {
+        return args[0];
+      }
+
+      return applyFunction(func, args);
+
     case Identifier:
       return evaluateIdentifier(node, environment);
 
@@ -128,6 +152,7 @@ function evaluateBlockStatement(statements, environment) {
 
   return result;
 }
+
 function isErr(object) {
   return object !== null && object.type() === ERR_OBJ;
 }
@@ -245,6 +270,48 @@ function evaluateIdentifier(node, environment) {
   }
 
   return new Err(`identifier not found: ${node.value}`);
+}
+
+function evaluateExpressions(expressions, environment) {
+  let result = [];
+
+  expressions.forEach((expression) => {
+    const evaluated = evaluate(expression, environment);
+
+    if (isErr(evaluated)) {
+      return [evaluated];
+    }
+
+    result.push(evaluated);
+  });
+
+  return result;
+}
+
+function applyFunction(func, args) {
+  if ((!func) instanceof Function) {
+    return new Err(`not a function: ${func.type()}`);
+  }
+
+  const extendedEnvironment = extendFunctionEnvironment(func, args);
+  const evaluated = evaluate(func.body, extendedEnvironment);
+  return unwrapReturnValue(evaluated);
+}
+
+function extendFunctionEnvironment(func, args) {
+  const env = newEnvironment(func.environment);
+
+  func.parameters.forEach((param, ind) => env.set(param.value, args[ind]));
+
+  return env;
+}
+
+function unwrapReturnValue(obj) {
+  if (obj instanceof ReturnValue) {
+    return obj.value;
+  }
+
+  return obj;
 }
 
 function isTruthy(object) {
