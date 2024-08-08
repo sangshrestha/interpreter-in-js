@@ -158,4 +158,18 @@ describe("Lexer.nextToken()", () => {
       expect(testLexer.nextToken()).toEqual(expectedToken);
     });
   });
+
+  it("assigns string tokens", () => {
+    const testString = "'foo bar'";
+    const testLexer = createLexer(testString);
+
+    const expectedTokens = [
+      { type: token.STRING, literal: "foo bar" },
+      { type: token.EOF, literal: "" },
+    ];
+
+    expectedTokens.forEach((expectedToken) => {
+      expect(testLexer.nextToken()).toEqual(expectedToken);
+    });
+  });
 });

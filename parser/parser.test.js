@@ -11,6 +11,7 @@ import {
   LetStatement,
   PrefixExpression,
   ReturnStatement,
+  StringLiteral,
 } from "../ast/ast";
 
 describe.each([
@@ -102,6 +103,22 @@ describe.each([
 
   const { expression } = program.statements[0];
   testIntegerLiteral(expression, value);
+});
+
+describe.each([
+  ['"kekw"', "kekw"],
+  ["'kekw  lol'", "kekw  lol"],
+])("Parse string literal expression", (input, value) => {
+  const parser = createParser(createLexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+  testStringLiteral(expression, value);
 });
 
 describe.each([
@@ -366,6 +383,20 @@ function testIdentifier(expression, value) {
   });
 
   it("outputs expected identifier value", () => {
+    expect(expression.value).toEqual(value);
+  });
+
+  it("outputs expected token literal", () => {
+    expect(expression.tokenLiteral()).toEqual(value);
+  });
+}
+
+function testStringLiteral(expression, value) {
+  it("is an instance of StringLiteral", () => {
+    expect(expression instanceof StringLiteral).toEqual(true);
+  });
+
+  it("outputs expected string value", () => {
     expect(expression.value).toEqual(value);
   });
 

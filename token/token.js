@@ -3,6 +3,7 @@ export const ILLEGAL = "ILLEGAL",
   // Identifiers + literals
   IDENT = "IDENT", // add, foobar, x, y, ...
   INT = "INT", // 1343456
+  STRING = "STRING",
   // Operators
   ASSIGN = "=",
   PLUS = "+",
@@ -21,6 +22,7 @@ export const ILLEGAL = "ILLEGAL",
   RPAREN = ")",
   LBRACE = "{",
   RBRACE = "}",
+  QUOTATION = '"',
   // Keywords
   FUNCTION = "FUNCTION",
   LET = "LET",

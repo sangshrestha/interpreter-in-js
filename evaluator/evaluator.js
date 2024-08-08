@@ -12,6 +12,7 @@ import {
   Identifier,
   FunctionLiteral,
   CallExpression,
+  StringLiteral,
 } from "../ast/ast.js";
 import {
   Bool,
@@ -24,6 +25,8 @@ import {
   Null,
   RETURN_VALUE_OBJ,
   ReturnValue,
+  STRING_OBJ,
+  StringLit,
 } from "../object/object.js";
 
 const TRUE = new Bool(true);
@@ -40,6 +43,9 @@ export function evaluate(node, environment) {
 
     case IntegerLiteral:
       return new Integer(node.value);
+
+    case StringLiteral:
+      return new StringLit(node.value);
 
     case BooleanExpression:
       return node.value ? TRUE : FALSE;
@@ -195,6 +201,13 @@ function evaluateMinusOperatorExpression(object) {
 function evaluateInfixExpression(left, operator, right) {
   if (left.type() == INTEGER_OBJ && right.type() == INTEGER_OBJ) {
     return evaluateIntegerInfixExpression(left, operator, right);
+  }
+
+  if (left.type() == STRING_OBJ && right.type() == STRING_OBJ) {
+    switch (operator) {
+      case "+":
+        return new StringLit(left.value + right.value);
+    }
   }
 
   if (operator === "==") {

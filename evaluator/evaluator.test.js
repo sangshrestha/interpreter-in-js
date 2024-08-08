@@ -8,6 +8,7 @@ import {
   Err,
   newEnvironment,
   Function,
+  StringLit,
 } from "../object/object.js";
 import { createParser } from "../parser/parser";
 
@@ -32,6 +33,14 @@ describe.each([
 ])("Evaluate integer expression", (input, expected) => {
   const evaluated = testEvaluate(input);
   testIntegerObject(evaluated, expected);
+});
+
+describe.each([
+  ["'5'", "5"],
+  ['"foo" + " " + "bar"', "foo bar"],
+])("Evaluate string literal expression", (input, expected) => {
+  const evaluated = testEvaluate(input);
+  testStringObject(evaluated, expected);
 });
 
 describe.each([
@@ -109,6 +118,7 @@ describe.each([
     "unknown operator: BOOLEAN + BOOLEAN",
   ],
   ["foobar", "identifier not found: foobar"],
+  ['"hello" - "world"', "unknown operator: STRING - STRING"],
 ])("Evaluate error handling", (input, expected) => {
   const evaluated = testEvaluate(input);
   testErrorObject(evaluated, expected);
@@ -169,6 +179,16 @@ function testEvaluate(input) {
 function testIntegerObject(object, expected) {
   it("is an instance of Integer", () => {
     expect(object instanceof Integer).toEqual(true);
+  });
+
+  it("holds expected value", () => {
+    expect(object.value).toEqual(expected);
+  });
+}
+
+function testStringObject(object, expected) {
+  it("is an instance of StringLit", () => {
+    expect(object instanceof StringLit).toEqual(true);
   });
 
   it("holds expected value", () => {

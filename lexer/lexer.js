@@ -42,6 +42,17 @@ export function createLexer(input) {
     return input.slice(startIndex, index);
   }
 
+  function readString(endQuote) {
+    updateIndex();
+    const startIndex = index;
+
+    while (getChar() !== endQuote && getChar() !== 0) {
+      updateIndex();
+    }
+
+    return input.slice(startIndex, index);
+  }
+
   function readDigit() {
     const startIndex = index;
 
@@ -123,6 +134,20 @@ export function createLexer(input) {
       case ">":
         thisToken = new token.Token(token.GT, getChar());
         break;
+
+      case '"':
+      case "'":
+        const quoteChar = getChar();
+        const string = readString(quoteChar);
+
+        let tokenType = token.ILLEGAL;
+
+        if (getChar() === quoteChar) {
+          tokenType = token.STRING;
+          updateIndex();
+        }
+
+        return new token.Token(tokenType, string);
 
       case 0:
         thisToken = new token.Token(token.EOF, "");

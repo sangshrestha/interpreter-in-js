@@ -8,6 +8,7 @@ import {
   IfExpression,
   InfixExpression,
   IntegerLiteral,
+  StringLiteral,
   LetStatement,
   PrefixExpression,
   Program,
@@ -51,6 +52,7 @@ export function createParser(lexer) {
     [token.LPAREN]: parseGroupExpression,
     [token.IF]: parseIfExpression,
     [token.FUNCTION]: parseFunctionLiteral,
+    [token.STRING]: parseStringLiteral,
   };
 
   const infixParseFns = {
@@ -117,6 +119,10 @@ export function createParser(lexer) {
     }
 
     return new IntegerLiteral(currentToken, value);
+  }
+
+  function parseStringLiteral() {
+    return new StringLiteral(currentToken, currentToken.literal);
   }
 
   function parsePrefixExpression() {

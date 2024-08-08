@@ -1,4 +1,5 @@
 export const INTEGER_OBJ = "INTEGER";
+export const STRING_OBJ = "STRING";
 export const BOOLEAN_OBJ = "BOOLEAN";
 export const NULL_OBJ = "NULL";
 export const RETURN_VALUE_OBJ = "RETURN_VALUE";
@@ -16,6 +17,20 @@ export class Integer {
 
   type() {
     return INTEGER_OBJ;
+  }
+}
+
+export class StringLit {
+  constructor(value) {
+    this.value = value;
+  }
+
+  inspect() {
+    return this.value;
+  }
+
+  type() {
+    return STRING_OBJ;
   }
 }
 

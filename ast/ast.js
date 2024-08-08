@@ -41,6 +41,18 @@ export class IntegerLiteral extends Expression {
   }
 }
 
+export class StringLiteral extends Expression {
+  constructor(token, value) {
+    super();
+    this.token = token;
+    this.value = value;
+  }
+
+  string() {
+    return this.token.literal;
+  }
+}
+
 export class LetStatement extends Statement {
   constructor(token, identifier, expression) {
     super();
