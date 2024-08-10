@@ -16,6 +16,7 @@ import {
 } from "../ast/ast.js";
 import {
   Bool,
+  Builtin,
   Err,
   ERR_OBJ,
   Function,
@@ -28,6 +29,7 @@ import {
   STRING_OBJ,
   StringLit,
 } from "../object/object.js";
+import { BUILTINS } from "./builtins.js";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
@@ -284,6 +286,12 @@ function evaluateIdentifier(node, environment) {
     return val;
   }
 
+  const builtin = BUILTINS[node.value];
+
+  if (builtin) {
+    return builtin;
+  }
+
   return new Err(`identifier not found: ${node.value}`);
 }
 
@@ -304,13 +312,18 @@ function evaluateExpressions(expressions, environment) {
 }
 
 function applyFunction(func, args) {
-  if ((!func) instanceof Function) {
-    return new Err(`not a function: ${func.type()}`);
-  }
+  switch (func.constructor) {
+    case Function:
+      const extendedEnvironment = extendFunctionEnvironment(func, args);
+      const evaluated = evaluate(func.body, extendedEnvironment);
+      return unwrapReturnValue(evaluated);
 
-  const extendedEnvironment = extendFunctionEnvironment(func, args);
-  const evaluated = evaluate(func.body, extendedEnvironment);
-  return unwrapReturnValue(evaluated);
+    case Builtin:
+      return func.func(...args);
+
+    default:
+      return new Err(`not a function: ${func.type()}`);
+  }
 }
 
 function extendFunctionEnvironment(func, args) {

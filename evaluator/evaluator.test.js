@@ -134,6 +134,26 @@ describe.each([
   testIntegerObject(evaluated, expected);
 });
 
+describe.each([
+  ["len('')", 0],
+  ["len('four')", 4],
+  ["len('hello world')", 11],
+  ["len(1)", "argument to 'len' not supported, got INTEGER"],
+  ["len('one', 'two')", "wrong number of arguments. got=2, want=1"],
+])("Test built in function", (input, expected) => {
+  const evaluated = testEvaluate(input);
+
+  switch (typeof expected) {
+    case "number":
+      testIntegerObject(evaluated, expected);
+      break;
+
+    case "string":
+      testErrorObject(evaluated, expected);
+      break;
+  }
+});
+
 describe("Test Function object", () => {
   const input = "fn(x) { x + 2; };";
 

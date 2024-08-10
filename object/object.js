@@ -5,6 +5,7 @@ export const NULL_OBJ = "NULL";
 export const RETURN_VALUE_OBJ = "RETURN_VALUE";
 export const ERR_OBJ = "ERR";
 export const FUNCTION_OBJ = "FUNCTION";
+export const BUILTIN_OBJ = "BUILTIN";
 
 export class Integer {
   constructor(value) {
@@ -107,6 +108,20 @@ export class Function {
 
   type() {
     return FUNCTION_OBJ;
+  }
+}
+
+export class Builtin {
+  constructor(func) {
+    this.func = func;
+  }
+
+  inspect() {
+    return "builtin function";
+  }
+
+  type() {
+    return BUILTIN_OBJ;
   }
 }
 
