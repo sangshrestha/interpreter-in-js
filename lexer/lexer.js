@@ -93,6 +93,14 @@ export function createLexer(input) {
         thisToken = new token.Token(token.RBRACE, getChar());
         break;
 
+      case "[":
+        thisToken = new token.Token(token.LBRACKET, getChar());
+        break;
+
+      case "]":
+        thisToken = new token.Token(token.RBRACKET, getChar());
+        break;
+
       case "=":
         if (peekChar() === "=") {
           updateIndex();
