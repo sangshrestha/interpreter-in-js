@@ -198,6 +198,20 @@ export class CallExpression extends Expression {
   }
 }
 
+export class ArrayLiteral extends Expression {
+  constructor(token, elements) {
+    super();
+    this.token = token;
+    this.elements = elements;
+  }
+
+  string() {
+    let elString = this.elements.map((el) => el.string()).join(", ");
+
+    return `[${elString}]`;
+  }
+}
+
 export class Program extends Node {
   constructor(statements) {
     super();

@@ -1,6 +1,7 @@
 import { createParser } from "./parser";
 import { createLexer } from "../lexer/lexer";
 import {
+  ArrayLiteral,
   BooleanExpression,
   CallExpression,
   FunctionLiteral,
@@ -350,6 +351,56 @@ describe("Parse call expression", () => {
   testLiteralExpression(expression.args[0], 1);
   testInfixExpression(expression.args[1], 2, "*", 3);
   testInfixExpression(expression.args[2], 5, "+", 7);
+});
+
+describe("Parse array literal", () => {
+  const input = "[1, 2 * 5, false]";
+
+  const parser = createParser(createLexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+
+  it("is an instance of ArrayLiteral", () => {
+    expect(expression instanceof ArrayLiteral).toEqual(true);
+  });
+
+  const { elements } = expression;
+
+  it("has expected number of elements", () => {
+    expect(elements.length).toEqual(3);
+  });
+
+  testIntegerLiteral(elements[0], 1);
+  testInfixExpression(elements[1], 2, "*", 5);
+  testBooleanExpression(elements[2], false);
+});
+
+describe("Parse empty array literal", () => {
+  const input = "[]";
+
+  const parser = createParser(createLexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+
+  it("is an instance of ArrayLiteral", () => {
+    expect(expression instanceof ArrayLiteral).toEqual(true);
+  });
+
+  it("has expected number of elements", () => {
+    expect(expression.elements.length).toEqual(0);
+  });
 });
 
 // Helper functions

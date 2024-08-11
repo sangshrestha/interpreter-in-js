@@ -13,6 +13,7 @@ import {
   PrefixExpression,
   Program,
   ReturnStatement,
+  ArrayLiteral,
 } from "../ast/ast.js";
 import * as token from "../token/token.js";
 
@@ -22,7 +23,8 @@ const LOWEST = -1,
   SUM = 3,
   PRODUCT = 4,
   PREFIX = 5,
-  CALL = 6;
+  CALL = 6,
+  INDEX = 7;
 
 const precedences = {
   [token.EQ]: EQUALS,
@@ -34,6 +36,7 @@ const precedences = {
   [token.SLASH]: PRODUCT,
   [token.ASTERISK]: PRODUCT,
   [token.LPAREN]: CALL,
+  [token.LBRACKET]: INDEX,
 };
 
 export function createParser(lexer) {
@@ -53,6 +56,7 @@ export function createParser(lexer) {
     [token.IF]: parseIfExpression,
     [token.FUNCTION]: parseFunctionLiteral,
     [token.STRING]: parseStringLiteral,
+    [token.LBRACKET]: parseArrayLiteral,
   };
 
   const infixParseFns = {
@@ -303,15 +307,22 @@ export function createParser(lexer) {
 
   function parseCallExpression(functionExpression) {
     const startToken = currentToken;
-    const args = parseCallArguments();
+    const args = parseExpressionList(token.RPAREN);
 
     return new CallExpression(startToken, functionExpression, args);
   }
 
-  function parseCallArguments() {
+  function parseArrayLiteral() {
+    const startToken = currentToken;
+    const elements = parseExpressionList(token.RBRACKET);
+
+    return new ArrayLiteral(startToken, elements);
+  }
+
+  function parseExpressionList(tok) {
     let args = [];
 
-    if (peekToken.type === token.RPAREN) {
+    if (peekToken.type === tok) {
       advanceToken();
       return args;
     }
@@ -326,7 +337,7 @@ export function createParser(lexer) {
       args.push(parseExpression(LOWEST));
     }
 
-    if (peekToken.type !== token.RPAREN) {
+    if (peekToken.type !== tok) {
       return null;
     }
 
