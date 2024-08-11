@@ -9,6 +9,7 @@ import {
   newEnvironment,
   Function,
   StringLit,
+  Arr,
 } from "../object/object.js";
 import { createParser } from "../parser/parser";
 
@@ -174,6 +175,25 @@ describe.each([
 ])("Evaluate function", (input, expected) => {
   const evaluated = testEvaluate(input);
   testIntegerObject(evaluated, expected);
+});
+
+describe("Evaluate array literal", () => {
+  const input = "[1, 2 * 3, 5 + 7]";
+  const evaluated = testEvaluate(input);
+
+  it("is an instance of Arr", () => {
+    expect(evaluated instanceof Arr).toEqual(true);
+  });
+
+  const { elements } = evaluated;
+
+  it("has expected number of elements", () => {
+    expect(elements.length).toEqual(3);
+  });
+
+  testIntegerObject(elements[0], 1);
+  testIntegerObject(elements[1], 6);
+  testIntegerObject(elements[2], 12);
 });
 
 describe("Test Closure", () => {

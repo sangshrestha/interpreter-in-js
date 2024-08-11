@@ -6,6 +6,7 @@ export const RETURN_VALUE_OBJ = "RETURN_VALUE";
 export const ERR_OBJ = "ERR";
 export const FUNCTION_OBJ = "FUNCTION";
 export const BUILTIN_OBJ = "BUILTIN";
+export const ARRAY_OBJ = "ARRAY";
 
 export class Integer {
   constructor(value) {
@@ -122,6 +123,21 @@ export class Builtin {
 
   type() {
     return BUILTIN_OBJ;
+  }
+}
+
+export class Arr {
+  constructor(elements) {
+    this.elements = elements;
+  }
+
+  inspect() {
+    const elString = this.elements.map((el) => el.inspect()).join(", ");
+    return `[${elString}]`;
+  }
+
+  type() {
+    return ARRAY_OBJ;
   }
 }
 

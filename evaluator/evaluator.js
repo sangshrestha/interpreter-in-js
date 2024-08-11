@@ -13,8 +13,10 @@ import {
   FunctionLiteral,
   CallExpression,
   StringLiteral,
+  ArrayLiteral,
 } from "../ast/ast.js";
 import {
+  Arr,
   Bool,
   Builtin,
   Err,
@@ -109,6 +111,15 @@ export function evaluate(node, environment) {
       }
 
       return applyFunction(func, args);
+
+    case ArrayLiteral:
+      const els = evaluateExpressions(node.elements, environment);
+
+      if (els.length === 1 && isErr(els[0])) {
+        return els[0];
+      }
+
+      return new Arr(els);
 
     case Identifier:
       return evaluateIdentifier(node, environment);
