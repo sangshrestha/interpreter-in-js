@@ -14,6 +14,7 @@ import {
   Program,
   ReturnStatement,
   ArrayLiteral,
+  IndexExpression,
 } from "../ast/ast.js";
 import * as token from "../token/token.js";
 
@@ -69,6 +70,7 @@ export function createParser(lexer) {
     [token.LT]: parseInfixExpression,
     [token.GT]: parseInfixExpression,
     [token.LPAREN]: parseCallExpression,
+    [token.LBRACKET]: parseIndexExpression,
   };
 
   function getCurrentToken() {
@@ -344,6 +346,22 @@ export function createParser(lexer) {
     advanceToken();
 
     return args;
+  }
+
+  function parseIndexExpression(leftExp) {
+    const startToken = currentToken;
+
+    advanceToken();
+
+    const index = parseExpression(LOWEST);
+
+    if (peekToken.type !== token.RBRACKET) {
+      return null;
+    }
+
+    advanceToken();
+
+    return new IndexExpression(startToken, leftExp, index);
   }
 
   function parseExpression(precedence) {

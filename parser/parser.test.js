@@ -7,6 +7,7 @@ import {
   FunctionLiteral,
   Identifier,
   IfExpression,
+  IndexExpression,
   InfixExpression,
   IntegerLiteral,
   LetStatement,
@@ -213,6 +214,11 @@ describe.each([
   ["2 / (5 + 5)", "(2 / (5 + 5))"],
   ["-(5 + 5)", "(-(5 + 5))"],
   ["!(true == true)", "(!(true == true))"],
+  ["a * [1, 2, 3, 4][b * c] * d", "((a * ([1, 2, 3, 4][(b * c)])) * d)"],
+  [
+    "add(a * b[2], b[1], 2 * [1, 2][1])",
+    "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
+  ],
 ])("Operator precedence", (input, expected) => {
   const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
@@ -383,7 +389,6 @@ describe("Parse array literal", () => {
 
 describe("Parse empty array literal", () => {
   const input = "[]";
-
   const parser = createParser(createLexer(input));
   const program = parser.parseProgram();
   checkParserErrors(parser);
@@ -401,6 +406,26 @@ describe("Parse empty array literal", () => {
   it("has expected number of elements", () => {
     expect(expression.elements.length).toEqual(0);
   });
+});
+
+describe("Parse index expression", () => {
+  const input = "myArray[1 + 2]";
+  const parser = createParser(createLexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+
+  it("is an instance of IndexExpression", () => {
+    expect(expression instanceof IndexExpression).toEqual(true);
+  });
+
+  testIdentifier(expression.leftExpression, "myArray");
+  testInfixExpression(expression.index, 1, "+", 2);
 });
 
 // Helper functions

@@ -212,6 +212,19 @@ export class ArrayLiteral extends Expression {
   }
 }
 
+export class IndexExpression extends Expression {
+  constructor(token, leftExpression, index) {
+    super();
+    this.token = token;
+    this.leftExpression = leftExpression;
+    this.index = index;
+  }
+
+  string() {
+    return `(${this.leftExpression.string()}[${this.index.string()}])`;
+  }
+}
+
 export class Program extends Node {
   constructor(statements) {
     super();
