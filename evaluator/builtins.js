@@ -1,4 +1,4 @@
-import { Builtin, Err, Integer, StringLit } from "../object/object.js";
+import { Arr, Builtin, Err, Integer, StringLit } from "../object/object.js";
 
 function len(...obj) {
   if (obj.length !== 1) {
@@ -10,6 +10,9 @@ function len(...obj) {
   switch (arg.constructor) {
     case StringLit:
       return new Integer(arg.value.length);
+
+    case Arr:
+      return new Integer(arg.elements.length);
 
     default:
       return new Err(`argument to 'len' not supported, got ${arg.type()}`);
