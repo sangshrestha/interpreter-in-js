@@ -14,9 +14,11 @@ import {
   CallExpression,
   StringLiteral,
   ArrayLiteral,
+  IndexExpression,
 } from "../ast/ast.js";
 import {
   Arr,
+  ARRAY_OBJ,
   Bool,
   Builtin,
   Err,
@@ -120,6 +122,21 @@ export function evaluate(node, environment) {
       }
 
       return new Arr(els);
+
+    case IndexExpression:
+      const leftExp = evaluate(node.leftExpression, environment);
+
+      if (isErr(leftExp)) {
+        return leftExp;
+      }
+
+      const ind = evaluate(node.index, environment);
+
+      if (isErr(leftExp)) {
+        return index;
+      }
+
+      return evaluateIndexExpression(leftExp, ind);
 
     case Identifier:
       return evaluateIdentifier(node, environment);
@@ -351,6 +368,25 @@ function unwrapReturnValue(obj) {
   }
 
   return obj;
+}
+
+function evaluateIndexExpression(leftExp, index) {
+  if (leftExp.type() === ARRAY_OBJ && index.type() === INTEGER_OBJ) {
+    return evaluateArrayIndexExpression(leftExp, index);
+  }
+
+  return new Err(`index operator not supported: ${leftExp.type()}`);
+}
+
+function evaluateArrayIndexExpression(arr, index) {
+  const indexVal = index.value;
+  const max = arr.elements.length - 1;
+
+  if (indexVal < 0 || indexVal > max) {
+    return NULL;
+  }
+
+  return arr.elements[indexVal];
 }
 
 function isTruthy(object) {
