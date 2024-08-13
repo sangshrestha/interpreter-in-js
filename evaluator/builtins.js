@@ -15,15 +15,15 @@ function len(...args) {
 
   const arg = args[0];
 
-  switch (args.constructor) {
+  switch (arg.constructor) {
     case StringLit:
-      return new Integer(args.value.length);
+      return new Integer(arg.value.length);
 
     case Arr:
-      return new Integer(args.elements.length);
+      return new Integer(arg.elements.length);
 
     default:
-      return new Err(`argument to 'len' not supported, got ${args.type()}`);
+      return new Err(`argument to 'len' not supported, got ${arg.type()}`);
   }
 }
 
