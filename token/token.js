@@ -25,6 +25,7 @@ export const ILLEGAL = "ILLEGAL",
   LBRACE = "{",
   RBRACE = "}",
   QUOTATION = '"',
+  COLON = ":",
   // Keywords
   FUNCTION = "FUNCTION",
   LET = "LET",

@@ -5,6 +5,7 @@ import {
   BooleanExpression,
   CallExpression,
   FunctionLiteral,
+  HashLiteral,
   Identifier,
   IfExpression,
   IndexExpression,
@@ -426,6 +427,63 @@ describe("Parse index expression", () => {
 
   testIdentifier(expression.leftExpression, "myArray");
   testInfixExpression(expression.index, 1, "+", 2);
+});
+
+describe("Parse hash literal with string keys", () => {
+  const input = '{"one": 1, "two": 2, "three": 3}';
+  const parser = createParser(createLexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+
+  it("is an instance of HashLiteral", () => {
+    expect(expression instanceof HashLiteral).toEqual(true);
+  });
+
+  it("has expected number of pairs", () => {
+    expect(expression.pairs.size).toEqual(3);
+  });
+
+  const expected = {
+    one: 1,
+    two: 2,
+    three: 3,
+  };
+
+  expression.pairs.forEach((value, key) => {
+    it("has StringLiteral keys", () => {
+      expect(key instanceof StringLiteral).toEqual(true);
+    });
+
+    const expectedValue = expected[key.string()];
+    testIntegerLiteral(value, expectedValue);
+  });
+});
+
+describe("Parse empty hash literal ", () => {
+  const input = "{}";
+  const parser = createParser(createLexer(input));
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  it("outputs expected number of statements", () => {
+    expect(program.statements.length).toEqual(1);
+  });
+
+  const { expression } = program.statements[0];
+
+  it("is an instance of HashLiteral", () => {
+    expect(expression instanceof HashLiteral).toEqual(true);
+  });
+
+  it("has expected number of pairs", () => {
+    expect(expression.pairs.size).toEqual(0);
+  });
 });
 
 // Helper functions

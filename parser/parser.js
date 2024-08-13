@@ -15,6 +15,7 @@ import {
   ReturnStatement,
   ArrayLiteral,
   IndexExpression,
+  HashLiteral,
 } from "../ast/ast.js";
 import * as token from "../token/token.js";
 
@@ -58,6 +59,7 @@ export function createParser(lexer) {
     [token.FUNCTION]: parseFunctionLiteral,
     [token.STRING]: parseStringLiteral,
     [token.LBRACKET]: parseArrayLiteral,
+    [token.LBRACE]: parseHashLiteral,
   };
 
   const infixParseFns = {
@@ -362,6 +364,42 @@ export function createParser(lexer) {
     advanceToken();
 
     return new IndexExpression(startToken, leftExp, index);
+  }
+
+  function parseHashLiteral() {
+    const startToken = currentToken;
+    const pairs = new Map();
+
+    while (peekToken.type !== token.RBRACE) {
+      advanceToken();
+      const key = parseExpression(LOWEST);
+
+      if (peekToken.type !== token.COLON) {
+        return null;
+      }
+
+      advanceToken();
+      advanceToken();
+
+      const value = parseExpression(LOWEST);
+      pairs.set(key, value);
+
+      if (peekToken.type !== token.RBRACE && peekToken.type !== token.COMMA) {
+        return null;
+      }
+
+      if (peekToken.type === token.COMMA) {
+        advanceToken();
+      }
+    }
+
+    if (peekToken.type !== token.RBRACE) {
+      return null;
+    }
+
+    advanceToken();
+
+    return new HashLiteral(startToken, pairs);
   }
 
   function parseExpression(precedence) {

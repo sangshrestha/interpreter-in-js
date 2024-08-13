@@ -3,7 +3,7 @@ import * as token from "../token/token.js";
 
 describe("Lexer.nextToken()", () => {
   it("assigns token for delimiters", () => {
-    const testString = ",;(){}[]";
+    const testString = ",;(){}[]:";
     const testLexer = createLexer(testString);
 
     const expectedTokens = [
@@ -15,6 +15,7 @@ describe("Lexer.nextToken()", () => {
       { type: token.RBRACE, literal: "}" },
       { type: token.LBRACKET, literal: "[" },
       { type: token.RBRACKET, literal: "]" },
+      { type: token.COLON, literal: ":" },
       { type: token.EOF, literal: "" },
     ];
 

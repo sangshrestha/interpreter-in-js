@@ -225,6 +225,23 @@ export class IndexExpression extends Expression {
   }
 }
 
+export class HashLiteral extends Expression {
+  constructor(token, pairs) {
+    super();
+    this.token = token;
+    this.pairs = pairs;
+  }
+
+  string() {
+    let pairString = [];
+    this.pairs.forEach((value, key) =>
+      pairString.push(`${key.string()}:${value.string()}`),
+    );
+
+    return `{${pairString.join(", ")}}`;
+  }
+}
+
 export class Program extends Node {
   constructor(statements) {
     super();
