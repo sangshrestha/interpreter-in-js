@@ -15,15 +15,20 @@ import {
   StringLiteral,
   ArrayLiteral,
   IndexExpression,
+  HashLiteral,
 } from "../ast/ast.js";
 import {
   Arr,
   ARRAY_OBJ,
   Bool,
+  BOOLEAN_OBJ,
   Builtin,
   Err,
   ERR_OBJ,
   Function,
+  Hash,
+  HASH_OBJ,
+  HashPair,
   Integer,
   INTEGER_OBJ,
   newEnvironment,
@@ -35,8 +40,8 @@ import {
 } from "../object/object.js";
 import { BUILTINS } from "./builtins.js";
 
-const TRUE = new Bool(true);
-const FALSE = new Bool(false);
+export const TRUE = new Bool(true);
+export const FALSE = new Bool(false);
 export const NULL = new Null();
 
 export function evaluate(node, environment) {
@@ -133,10 +138,13 @@ export function evaluate(node, environment) {
       const ind = evaluate(node.index, environment);
 
       if (isErr(leftExp)) {
-        return index;
+        return ind;
       }
 
       return evaluateIndexExpression(leftExp, ind);
+
+    case HashLiteral:
+      return evaluateHashLiteral(node, environment);
 
     case Identifier:
       return evaluateIdentifier(node, environment);
@@ -375,6 +383,10 @@ function evaluateIndexExpression(leftExp, index) {
     return evaluateArrayIndexExpression(leftExp, index);
   }
 
+  if (leftExp.type() === HASH_OBJ) {
+    return evaluateHashIndexExpression(leftExp, index);
+  }
+
   return new Err(`index operator not supported: ${leftExp.type()}`);
 }
 
@@ -387,6 +399,53 @@ function evaluateArrayIndexExpression(arr, index) {
   }
 
   return arr.elements[indexVal];
+}
+
+function evaluateHashIndexExpression(hash, index) {
+  if (!isHashable(index)) {
+    return new Err(`unusable as hash key: ${index.type()}`);
+  }
+
+  const pair = hash.pairs.get(index.value);
+
+  if (pair) {
+    return pair.value;
+  } else {
+    return NULL;
+  }
+}
+
+function evaluateHashLiteral(node, environment) {
+  const hashMap = new Map();
+
+  const iterator = node.pairs.entries();
+
+  for (const pair of iterator) {
+    const [key, value] = pair;
+
+    const evalKey = evaluate(key, environment);
+    if (isErr(evalKey)) {
+      return evalKey;
+    }
+
+    const evalValue = evaluate(value, environment);
+    if (isErr(evalKey)) {
+      return evalKey;
+    }
+
+    if (!isHashable(evalKey)) {
+      return new Err(`unusable as hash key: ${evalKey.type()}`);
+    }
+
+    const hashPair = new HashPair(evalKey, evalValue);
+    hashMap.set(evalKey.value, hashPair);
+  }
+
+  return new Hash(hashMap);
+}
+
+function isHashable(object) {
+  return [STRING_OBJ, INTEGER_OBJ, BOOLEAN_OBJ].includes(object.type());
 }
 
 function isTruthy(object) {

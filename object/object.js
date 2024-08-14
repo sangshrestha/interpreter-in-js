@@ -7,6 +7,7 @@ export const ERR_OBJ = "ERR";
 export const FUNCTION_OBJ = "FUNCTION";
 export const BUILTIN_OBJ = "BUILTIN";
 export const ARRAY_OBJ = "ARRAY";
+export const HASH_OBJ = "HASH";
 
 export class Integer {
   constructor(value) {
@@ -138,6 +139,31 @@ export class Arr {
 
   type() {
     return ARRAY_OBJ;
+  }
+}
+
+export class HashPair {
+  constructor(key, value) {
+    this.key = key;
+    this.value = value;
+  }
+}
+
+export class Hash {
+  constructor(pairs) {
+    this.pairs = pairs;
+  }
+
+  inspect() {
+    const stringPairs = [];
+    this.pairs.forEach((pair) =>
+      stringPairs.push(`${pair.key.inspect()}: ${pair.value.inspect()}`),
+    );
+    return `{${stringPairs.join(", ")}}`;
+  }
+
+  type() {
+    return HASH_OBJ;
   }
 }
 

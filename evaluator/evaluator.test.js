@@ -10,8 +10,10 @@ import {
   Function,
   StringLit,
   Arr,
+  Hash,
 } from "../object/object.js";
 import { createParser } from "../parser/parser";
+import { FALSE, TRUE } from "../evaluator/evaluator.js";
 
 describe.each([
   ["5", 5],
@@ -120,6 +122,8 @@ describe.each([
   ],
   ["foobar", "identifier not found: foobar"],
   ['"hello" - "world"', "unknown operator: STRING - STRING"],
+  ["let a = fn() {}; {a: 1}", "unusable as hash key: FUNCTION"],
+  ['{"name": "Monkey"}[fn(x) { x }];', "unusable as hash key: FUNCTION"],
 ])("Evaluate error handling", (input, expected) => {
   const evaluated = testEvaluate(input);
   testErrorObject(evaluated, expected);
@@ -227,6 +231,62 @@ describe("Test Closure", () => {
   `;
   const evaluated = testEvaluate(input);
   testIntegerObject(evaluated, 4);
+});
+
+describe("Evaluate hash literal", () => {
+  const input = `let two = "two";
+  {
+    "one": 10 - 9,
+    two: 1 + 1,
+    "thr" + "ee": 6 / 2,
+    4: 4,
+    true: 5,
+    false: 6
+  }`;
+
+  const evaluated = testEvaluate(input);
+
+  it("is an instance of Hash", () => {
+    expect(evaluated instanceof Hash).toEqual(true);
+  });
+
+  const expected = [
+    ["one", 1],
+    ["two", 2],
+    ["three", 3],
+    [4, 4],
+    [true, 5],
+    [false, 6],
+  ];
+
+  const { pairs } = evaluated;
+
+  it("has expected amount of pairs", () => {
+    expect(pairs.size).toEqual(expected.length);
+  });
+
+  expected.forEach(([expectedKey, expectedValue]) => {
+    const pair = pairs.get(expectedKey);
+    testIntegerObject(pair.value, expectedValue);
+  });
+});
+
+describe.each([
+  ["{'foo': 5}['foo']", 5],
+  ["{'foo': 5}['bar']", null],
+  ["let key = 'foo'; {'foo': 5}[key]", 5],
+  ["{}['foo']", null],
+  ["{5: 5}[5]", 5],
+  ["{true: 5}[true]", 5],
+  ["{false: 5}[false]", 5],
+])("Evaluate hash index expression", (input, expected) => {
+  const evaluated = testEvaluate(input);
+
+  if (typeof expected === "number") {
+    testIntegerObject(evaluated, expected);
+  } else {
+    testNullObject(evaluated);
+  }
 });
 
 function testEvaluate(input) {
