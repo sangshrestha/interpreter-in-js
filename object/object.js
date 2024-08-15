@@ -29,7 +29,7 @@ export class StringLit {
   }
 
   inspect() {
-    return this.value;
+    return `"${this.value}"`;
   }
 
   type() {

@@ -60,8 +60,14 @@ function push(...args) {
   return new Arr([...arr.elements, args[1]]);
 }
 
+function log(...args) {
+  console.log(...args.map((arg) => arg.inspect()));
+  return NULL;
+}
+
 export const BUILTINS = {
   len: new Builtin(len),
   rest: new Builtin(rest),
   push: new Builtin(push),
+  log: new Builtin(log),
 };
