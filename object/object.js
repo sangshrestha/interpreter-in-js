@@ -101,11 +101,9 @@ export class Function {
       .map((param) => param.string())
       .join(", ");
 
-    return `
-      fn(${paramString}) {
-      ${this.body.string()}
-      }
-    `;
+    return `fn(${paramString}) {
+       ${this.body.string()}
+}`;
   }
 
   type() {

@@ -1,8 +1,11 @@
 import readline from "node:readline/promises";
+import { argv } from "node:process";
+
 import { createLexer } from "./lexer/lexer.js";
 import { createParser } from "./parser/parser.js";
 import { evaluate } from "./evaluator/evaluator.js";
 import { newEnvironment } from "./object/object.js";
+import { EOF } from "./token/token.js";
 
 const env = newEnvironment();
 
@@ -26,16 +29,26 @@ while (true) {
   const evaluated = evaluate(inputProgram, env);
 
   if (evaluated != null) {
-    //const logerLexer = createLexer(code);
-    //console.log("Lexer: ", logerLexer.nextToken());
-    //
-    //const loggerParserLexer = createLexer(code);
-    //const loggerParser = createParser(loggerParserLexer);
-    //const loggerProgram = loggerParser.parseProgram();
-    //console.log("Parser: ", loggerProgram.statements);
-    //
-    //console.log("Eval: ", evaluated);
+    if (argv[2] === "-demo") {
+      const demoLexer = createLexer(code);
+      const tokens = [];
+      let endOfToken = false;
 
+      while (!endOfToken) {
+        let token = demoLexer.nextToken();
+        if (token.type === EOF) {
+          endOfToken = true;
+        }
+        tokens.push(token);
+      }
+      console.log("Lexer: ", tokens, "\n");
+
+      const demoParser = createParser(createLexer(code));
+      const demoProgram = demoParser.parseProgram();
+      console.log("Parser: ", demoProgram.statements, "\n");
+
+      console.log("Evaluated object: ", evaluated, "\n");
+    }
     console.log(evaluated.inspect());
   }
 

@@ -140,7 +140,7 @@ export class IfExpression extends Expression {
   }
 
   string() {
-    let str = `if${this.condition.string()} ${this.consequence.string()}`;
+    let str = `if ${this.condition.string()} ${this.consequence.string()}`;
 
     if (this.alternative) {
       str += `else ${this.alternative.string()}`;
