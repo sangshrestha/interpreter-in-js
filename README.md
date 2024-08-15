@@ -1,5 +1,5 @@
 # interpreter-in-js
-Following the book ["Writing An Interpreter In Go"](https://interpreterbook.com/) by Thorsten Ball using JavaScript.
+Following the book "[Writing An Interpreter In Go](https://interpreterbook.com/)" by Thorsten Ball using JavaScript.
 
 ## Installation
 Git clone this project locally. `npm i` is NOT required to run the project except to run the test suite.
@@ -7,7 +7,7 @@ Git clone this project locally. `npm i` is NOT required to run the project excep
 ## Usage
 ### REPL
 ```
-node index.js [-demo]
+node index.js 
 ```
 
-`-demo` flag is optional. Use without the brackets. This will output the results of the lexer and the parser.
+`-demo` flag is optional. This will additionally output the results of the lexer and the parser.
