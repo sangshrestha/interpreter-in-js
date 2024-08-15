@@ -13,7 +13,6 @@ import {
   Hash,
 } from "../object/object.js";
 import { createParser } from "../parser/parser";
-import { FALSE, TRUE } from "../evaluator/evaluator.js";
 
 describe.each([
   ["5", 5],

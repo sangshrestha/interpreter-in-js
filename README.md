@@ -18,7 +18,8 @@ let fibonacci = fn(n) {if (n < 1) {return 0}; if (n == 1) {return 1}; return fib
 ```
 
 ```
-fibonacci(10)
+fibonacci(22); 
+// 17711 
 ```
 
 
